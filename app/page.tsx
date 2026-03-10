@@ -11,9 +11,9 @@ import { getPlannerData } from "@/lib/supabase/queries";
 export default async function DashboardPage() {
   const data = await getPlannerData();
 
-  const bookedEvents = data.events.filter((event) => event.status === "Booked").length;
+  const bookedEvents = data.events.filter((event) => event.status === "booked").length;
   const pendingCount = [...data.events, ...data.documents, ...data.places].filter(
-    (item) => item.status === "Need to Book"
+    (item) => item.status === "tbc"
   ).length;
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
   const citySummary = data.days.reduce<Record<string, { start: string; end: string; days: number }>>(
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   const nextDocuments = data.documents.slice(0, 4);
   const nextActions = [...data.events, ...data.documents]
-    .filter((item) => item.status !== "Booked")
+    .filter((item) => item.status !== "booked")
     .slice(0, 5);
 
   return (

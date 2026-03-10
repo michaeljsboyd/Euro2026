@@ -8,6 +8,7 @@ function mapTrip(row: Record<string, unknown>): Trip {
     name: String(row.name),
     startDate: String(row.start_date),
     endDate: String(row.end_date),
+    cities: Array.isArray(row.cities) ? row.cities.map((city) => String(city)) : [],
     currency: String(row.currency),
     notes: String(row.notes ?? "")
   };
@@ -20,6 +21,7 @@ function mapDay(row: Record<string, unknown>): Day {
     date: String(row.date),
     city: String(row.city),
     title: String(row.title),
+    accommodation: String(row.accommodation ?? ""),
     status: row.status as Day["status"],
     notes: String(row.notes ?? "")
   };
@@ -31,6 +33,7 @@ function mapEvent(row: Record<string, unknown>): Event {
     dayId: String(row.day_id),
     city: String(row.city),
     title: String(row.title),
+    section: row.section as Event["section"],
     type: row.type as Event["type"],
     startTime: row.start_time ? String(row.start_time) : null,
     endTime: row.end_time ? String(row.end_time) : null,

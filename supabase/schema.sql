@@ -3,7 +3,11 @@ create extension if not exists "pgcrypto";
 do $$
 begin
   if not exists (select 1 from pg_type where typname = 'booking_status') then
-    create type booking_status as enum ('Booked', 'Tentative', 'Need to Book');
+    create type booking_status as enum ('booked', 'tentative', 'tbc');
+  end if;
+
+  if not exists (select 1 from pg_type where typname = 'day_section') then
+    create type day_section as enum ('Morning', 'Afternoon', 'Evening');
   end if;
 
   if not exists (select 1 from pg_type where typname = 'event_type') then
@@ -28,6 +32,7 @@ create table if not exists trips (
   name text not null,
   start_date date not null,
   end_date date not null,
+  cities text[] not null default '{}',
   currency text not null default 'EUR',
   notes text not null default '',
   created_at timestamptz not null default now()
@@ -39,7 +44,8 @@ create table if not exists days (
   date date not null,
   city text not null,
   title text not null,
-  status booking_status not null default 'Tentative',
+  accommodation text not null default '',
+  status booking_status not null default 'tentative',
   notes text not null default '',
   created_at timestamptz not null default now()
 );
@@ -49,11 +55,12 @@ create table if not exists events (
   day_id uuid not null references days(id) on delete cascade,
   city text not null,
   title text not null,
+  section day_section not null default 'Afternoon',
   type event_type not null,
   start_time time,
   end_time time,
   location text not null default '',
-  status booking_status not null default 'Tentative',
+  status booking_status not null default 'tentative',
   estimated_cost numeric(10, 2) not null default 0,
   notes text not null default '',
   created_at timestamptz not null default now()
@@ -65,7 +72,7 @@ create table if not exists documents (
   city text not null,
   title text not null,
   type document_type not null,
-  status booking_status not null default 'Tentative',
+  status booking_status not null default 'tentative',
   link text,
   file_path text,
   amount_paid numeric(10, 2) not null default 0,
@@ -79,7 +86,7 @@ create table if not exists places (
   city text not null,
   name text not null,
   type place_type not null,
-  status booking_status not null default 'Tentative',
+  status booking_status not null default 'tentative',
   link text,
   notes text not null default '',
   created_at timestamptz not null default now()
@@ -91,7 +98,7 @@ create table if not exists budget_items (
   city text,
   category budget_category not null,
   title text not null,
-  status booking_status not null default 'Tentative',
+  status booking_status not null default 'tentative',
   estimated_amount numeric(10, 2) not null default 0,
   paid_amount numeric(10, 2) not null default 0,
   notes text not null default '',
@@ -107,4 +114,3 @@ create index if not exists idx_budget_trip_category on budget_items(trip_id, cat
 insert into storage.buckets (id, name, public)
 values ('trip-documents', 'trip-documents', false)
 on conflict (id) do nothing;
-

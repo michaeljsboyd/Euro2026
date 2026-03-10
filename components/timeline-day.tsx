@@ -1,7 +1,7 @@
 import { Clock3 } from "lucide-react";
 
 import { formatDate, formatTime } from "@/lib/format";
-import { Day, Event } from "@/lib/types";
+import { Day, DaySection, Event } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
 
 interface TimelineDayProps {
@@ -9,27 +9,7 @@ interface TimelineDayProps {
   events: Event[];
 }
 
-type DaySection = "Morning" | "Afternoon" | "Evening";
-
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
-
-function getDaySection(time: string | null): DaySection {
-  if (!time) {
-    return "Afternoon";
-  }
-
-  const [hours] = time.split(":").map(Number);
-
-  if (hours < 12) {
-    return "Morning";
-  }
-
-  if (hours < 18) {
-    return "Afternoon";
-  }
-
-  return "Evening";
-}
 
 function sortEventsByTime(events: Event[]) {
   return [...events].sort((left, right) => {
@@ -63,7 +43,7 @@ export function TimelineDay({ day, events }: TimelineDayProps) {
   );
 
   for (const event of sortEventsByTime(events)) {
-    groupedEvents[getDaySection(event.startTime)].push(event);
+    groupedEvents[event.section].push(event);
   }
 
   return (
@@ -75,11 +55,16 @@ export function TimelineDay({ day, events }: TimelineDayProps) {
             <div>
               <h3 className="font-display text-4xl text-ink md:text-5xl">{day.city}</h3>
               <p className="mt-3 text-base text-ink/74">{day.title}</p>
+              {day.accommodation ? (
+                <p className="mt-3 text-sm uppercase tracking-[0.22em] text-olive/80">
+                  {day.accommodation}
+                </p>
+              ) : null}
             </div>
             <StatusBadge status={day.status} />
           </div>
         </div>
-        <p className="max-w-3xl text-sm leading-7 text-ink/62">{day.notes}</p>
+        {day.notes ? <p className="max-w-3xl text-sm leading-7 text-ink/62">{day.notes}</p> : null}
       </div>
 
       <div className="grid gap-8 pt-8 lg:grid-cols-3">
@@ -108,7 +93,9 @@ export function TimelineDay({ day, events }: TimelineDayProps) {
                       {formatTime(event.startTime)}
                       {event.endTime ? ` - ${formatTime(event.endTime)}` : ""}
                     </p>
-                    <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
+                    {event.notes ? (
+                      <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
+                    ) : null}
                   </article>
                 ))
               ) : (
