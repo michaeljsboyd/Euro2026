@@ -1,4 +1,4 @@
-import { Clock3 } from "lucide-react";
+import { Clock3, Plus } from "lucide-react";
 
 import { formatDate, formatTime } from "@/lib/format";
 import { Day, DaySection, Event } from "@/lib/types";
@@ -7,6 +7,8 @@ import { StatusBadge } from "@/components/status-badge";
 interface TimelineDayProps {
   day: Day;
   events: Event[];
+  onEventClick: (event: Event) => void;
+  onAddEvent: (day: Day, section: DaySection) => void;
 }
 
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
@@ -29,7 +31,7 @@ function sortEventsByTime(events: Event[]) {
   });
 }
 
-export function TimelineDay({ day, events }: TimelineDayProps) {
+export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineDayProps) {
   const groupedEvents = sections.reduce<Record<DaySection, Event[]>>(
     (accumulator, section) => ({
       ...accumulator,
@@ -70,17 +72,29 @@ export function TimelineDay({ day, events }: TimelineDayProps) {
       <div className="grid gap-8 pt-8 lg:grid-cols-3">
         {sections.map((section) => (
           <div key={section} className="space-y-5">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive/80">{section}</p>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive/80">{section}</p>
+                <button
+                  type="button"
+                  onClick={() => onAddEvent(day, section)}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink/65 transition-all duration-300 hover:border-white hover:bg-white hover:text-ink"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Add Event
+                </button>
+              </div>
               <div className="h-px bg-gradient-to-r from-[#dccfb8] to-transparent" />
             </div>
 
             <div className="space-y-4">
               {groupedEvents[section].length ? (
                 groupedEvents[section].map((event) => (
-                  <article
+                  <button
                     key={event.id}
-                    className="rounded-[24px] border border-[#efe6da] bg-[#fffdfa] p-5 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(31,36,48,0.06)]"
+                    type="button"
+                    onClick={() => onEventClick(event)}
+                    className="block w-full rounded-[24px] border border-[#efe6da] bg-[#fffdfa] p-5 text-left transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(31,36,48,0.06)]"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <h4 className="max-w-[16rem] text-lg font-semibold leading-7 text-ink">
@@ -96,7 +110,7 @@ export function TimelineDay({ day, events }: TimelineDayProps) {
                     {event.notes ? (
                       <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
                     ) : null}
-                  </article>
+                  </button>
                 ))
               ) : (
                 <div className="rounded-[24px] border border-dashed border-[#ddd2c0] bg-[rgba(255,253,250,0.7)] p-5">
