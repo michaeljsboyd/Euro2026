@@ -14,8 +14,8 @@ begin
     create type event_type as enum ('Travel', 'Stay', 'Meal', 'Activity', 'Nightlife', 'Beach');
   end if;
 
-  if not exists (select 1 from pg_type where typname = 'document_type') then
-    create type document_type as enum ('Flight', 'Hotel', 'Transfer', 'Reservation', 'Guide', 'Ticket');
+  if not exists (select 1 from pg_type where typname = 'booking_type') then
+    create type booking_type as enum ('hotel', 'restaurant', 'flight', 'activity');
   end if;
 
   if not exists (select 1 from pg_type where typname = 'place_type') then
@@ -66,17 +66,17 @@ create table if not exists events (
   created_at timestamptz not null default now()
 );
 
-create table if not exists documents (
+create table if not exists bookings (
   id uuid primary key default gen_random_uuid(),
   trip_id uuid not null references trips(id) on delete cascade,
+  type booking_type not null,
   city text not null,
   title text not null,
-  type document_type not null,
+  date date not null,
+  confirmation_number text not null default '',
   status booking_status not null default 'tentative',
-  link text,
-  file_path text,
-  amount_paid numeric(10, 2) not null default 0,
   notes text not null default '',
+  file_url text,
   created_at timestamptz not null default now()
 );
 
@@ -107,7 +107,7 @@ create table if not exists budget_items (
 
 create index if not exists idx_days_trip_date on days(trip_id, date);
 create index if not exists idx_events_day_time on events(day_id, start_time);
-create index if not exists idx_documents_trip_city on documents(trip_id, city);
+create index if not exists idx_bookings_trip_city on bookings(trip_id, city);
 create index if not exists idx_places_trip_city_type on places(trip_id, city, type);
 create index if not exists idx_budget_trip_category on budget_items(trip_id, category);
 

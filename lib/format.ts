@@ -2,7 +2,7 @@ export function formatDate(date: string) {
   return new Intl.DateTimeFormat("en-AU", {
     weekday: "short",
     day: "numeric",
-    month: "short"
+    month: "long"
   }).format(new Date(date));
 }
 

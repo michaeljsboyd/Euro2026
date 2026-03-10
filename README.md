@@ -7,13 +7,13 @@ Private Next.js + Tailwind + Supabase trip planner for a family Europe holiday.
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- Supabase (Postgres + optional Storage bucket for uploaded trip documents)
+- Supabase (Postgres + optional Storage bucket for uploaded booking files)
 
 ## Included in v1
 
 - Dashboard with trip summary by city and date
 - Itinerary page with daily events
-- Bookings / documents page with links, file-path references, payment info, and notes
+- Bookings page with confirmation numbers, optional file links, dates, and notes
 - Saved places page grouped by city and type
 - Simple budget tracker
 - Seeded sample data for Paris, Cap Ferrat, Ibiza, Sicily, and Rome
@@ -69,13 +69,13 @@ This makes it easy to start designing immediately, then switch to live data late
 ## Notes about uploads
 
 - The schema creates a private storage bucket named `trip-documents`.
-- The v1 UI stores and displays `file_path` references.
+- The v1 UI stores and displays optional `file_url` values for bookings.
 - Actual file upload forms and auth policies can be added next once you decide how you want family/admin access handled.
 
 ## Suggested next steps
 
 - Add Supabase Auth so the planner is actually private in production
-- Add CRUD forms for editing trips, days, events, documents, places, and budget items
+- Add CRUD forms for editing trips, days, events, bookings, places, and budget items
 - Add direct file upload and preview support for travel PDFs and confirmations
 - Add filters by city, status, and date
 

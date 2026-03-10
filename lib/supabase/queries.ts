@@ -1,6 +1,6 @@
 import { sampleData } from "@/lib/sample-data";
 import { createPlannerClient } from "@/lib/supabase/client";
-import { BudgetItem, Day, Document, Event, Place, PlannerData, Trip } from "@/lib/types";
+import { Booking, BudgetItem, Day, Event, Place, PlannerData, Trip } from "@/lib/types";
 
 function mapTrip(row: Record<string, unknown>): Trip {
   return {
@@ -44,18 +44,18 @@ function mapEvent(row: Record<string, unknown>): Event {
   };
 }
 
-function mapDocument(row: Record<string, unknown>): Document {
+function mapBooking(row: Record<string, unknown>): Booking {
   return {
     id: String(row.id),
     tripId: String(row.trip_id),
-    city: String(row.city),
+    type: row.type as Booking["type"],
     title: String(row.title),
-    type: row.type as Document["type"],
-    status: row.status as Document["status"],
-    link: row.link ? String(row.link) : null,
-    filePath: row.file_path ? String(row.file_path) : null,
-    amountPaid: Number(row.amount_paid ?? 0),
-    notes: String(row.notes ?? "")
+    city: String(row.city),
+    date: String(row.date),
+    confirmationNumber: String(row.confirmation_number ?? ""),
+    status: row.status as Booking["status"],
+    notes: String(row.notes ?? ""),
+    fileUrl: row.file_url ? String(row.file_url) : null
   };
 }
 
@@ -98,14 +98,14 @@ export async function getPlannerData(): Promise<PlannerData> {
       { data: trips, error: tripsError },
       { data: days, error: daysError },
       { data: events, error: eventsError },
-      { data: documents, error: documentsError },
+      { data: bookings, error: bookingsError },
       { data: places, error: placesError },
       { data: budgetItems, error: budgetItemsError }
     ] = await Promise.all([
       supabase.from("trips").select("*").limit(1).order("start_date", { ascending: true }),
       supabase.from("days").select("*").order("date", { ascending: true }),
       supabase.from("events").select("*").order("start_time", { ascending: true }),
-      supabase.from("documents").select("*").order("city", { ascending: true }),
+      supabase.from("bookings").select("*").order("date", { ascending: true }),
       supabase.from("places").select("*").order("city", { ascending: true }),
       supabase.from("budget_items").select("*").order("category", { ascending: true })
     ]);
@@ -114,7 +114,7 @@ export async function getPlannerData(): Promise<PlannerData> {
       tripsError ||
       daysError ||
       eventsError ||
-      documentsError ||
+      bookingsError ||
       placesError ||
       budgetItemsError ||
       !trips?.length
@@ -126,7 +126,7 @@ export async function getPlannerData(): Promise<PlannerData> {
       trip: mapTrip(trips[0]),
       days: (days ?? []).map((row) => mapDay(row as Record<string, unknown>)),
       events: (events ?? []).map((row) => mapEvent(row as Record<string, unknown>)),
-      documents: (documents ?? []).map((row) => mapDocument(row as Record<string, unknown>)),
+      bookings: (bookings ?? []).map((row) => mapBooking(row as Record<string, unknown>)),
       places: (places ?? []).map((row) => mapPlace(row as Record<string, unknown>)),
       budgetItems: (budgetItems ?? []).map((row) => mapBudgetItem(row as Record<string, unknown>))
     };

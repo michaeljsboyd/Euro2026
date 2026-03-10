@@ -1,7 +1,7 @@
 export type BookingStatus = "booked" | "tentative" | "tbc";
 export type DaySection = "Morning" | "Afternoon" | "Evening";
 export type PlaceType = "Restaurant" | "Beach Club" | "Bar" | "Activity";
-export type DocumentType = "Flight" | "Hotel" | "Transfer" | "Reservation" | "Guide" | "Ticket";
+export type BookingType = "hotel" | "restaurant" | "flight" | "activity";
 export type EventType = "Travel" | "Stay" | "Meal" | "Activity" | "Nightlife" | "Beach";
 export type BudgetCategory =
   | "Flights"
@@ -48,17 +48,17 @@ export interface Event {
   notes: string;
 }
 
-export interface Document {
+export interface Booking {
   id: string;
   tripId: string;
-  city: string;
+  type: BookingType;
   title: string;
-  type: DocumentType;
+  city: string;
+  date: string;
+  confirmationNumber: string;
   status: BookingStatus;
-  link: string | null;
-  filePath: string | null;
-  amountPaid: number;
   notes: string;
+  fileUrl: string | null;
 }
 
 export interface Place {
@@ -88,7 +88,7 @@ export interface PlannerData {
   trip: Trip;
   days: Day[];
   events: Event[];
-  documents: Document[];
+  bookings: Booking[];
   places: Place[];
   budgetItems: BudgetItem[];
 }

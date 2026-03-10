@@ -308,7 +308,56 @@ export const sampleData: PlannerData = {
       notes: ""
     }
   ],
-  documents: [],
+  bookings: [
+    {
+      id: "booking-paris-hotel",
+      tripId,
+      type: "hotel",
+      title: "San Regis",
+      city: "Paris",
+      date: "2026-06-08",
+      confirmationNumber: "SR-2026-PAR",
+      status: "booked",
+      notes: "",
+      fileUrl: null
+    },
+    {
+      id: "booking-paris-nice-flight",
+      tripId,
+      type: "flight",
+      title: "Paris to Nice",
+      city: "Nice",
+      date: "2026-06-11",
+      confirmationNumber: "AF-0900-NCE",
+      status: "booked",
+      notes: "",
+      fileUrl: null
+    },
+    {
+      id: "booking-nice-hotel",
+      tripId,
+      type: "hotel",
+      title: "Royal Riviera",
+      city: "Nice",
+      date: "2026-06-11",
+      confirmationNumber: "RR-2026-NCE",
+      status: "booked",
+      notes: "",
+      fileUrl: null
+    },
+    {
+      id: "booking-african-queen",
+      tripId,
+      type: "restaurant",
+      title: "African Queen",
+      city: "Nice",
+      date: "2026-06-11",
+      confirmationNumber: "AQ-DINNER",
+      status: "booked",
+      notes: "",
+      fileUrl: null
+    }
+  ],
   places: [],
   budgetItems: []
 };

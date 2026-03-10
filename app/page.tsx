@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   const data = await getPlannerData();
 
   const bookedEvents = data.events.filter((event) => event.status === "booked").length;
-  const pendingCount = [...data.events, ...data.documents, ...data.places].filter(
+  const pendingCount = [...data.events, ...data.bookings, ...data.places].filter(
     (item) => item.status === "tbc"
   ).length;
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
@@ -35,8 +35,8 @@ export default async function DashboardPage() {
     {}
   );
 
-  const nextDocuments = data.documents.slice(0, 4);
-  const nextActions = [...data.events, ...data.documents]
+  const nextBookings = data.bookings.slice(0, 4);
+  const nextActions = [...data.events, ...data.bookings]
     .filter((item) => item.status !== "booked")
     .slice(0, 5);
 
@@ -124,20 +124,22 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard title="Documents Snapshot" subtitle="Quick access to current confirmations and references.">
+        <SectionCard title="Bookings Snapshot" subtitle="Quick access to current confirmations and attached files.">
           <div className="space-y-3">
-            {nextDocuments.map((document) => (
-              <article key={document.id} className="rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4">
+            {nextBookings.map((booking) => (
+              <article key={booking.id} className="rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-semibold text-ink">{document.title}</p>
+                    <p className="font-semibold text-ink">{booking.title}</p>
                     <p className="mt-1 text-sm text-ink/60">
-                      {document.city} • {document.type}
+                      {booking.city} • {booking.type}
                     </p>
                   </div>
-                  <StatusBadge status={document.status} />
+                  <StatusBadge status={booking.status} />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-ink/65">{document.notes}</p>
+                <p className="mt-3 text-sm leading-6 text-ink/65">
+                  {booking.notes || booking.confirmationNumber}
+                </p>
               </article>
             ))}
           </div>
