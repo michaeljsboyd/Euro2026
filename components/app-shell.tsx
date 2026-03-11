@@ -9,7 +9,8 @@ import { Menu, X } from "lucide-react";
 
 const links = [
   { href: "/", label: "Dashboard" },
-  { href: "/itinerary", label: "Itinerary" },
+  { href: "/itinerary", label: "Daily Flow" },
+  { href: "/overview", label: "Overview" },
   { href: "/bookings", label: "Bookings" },
   { href: "/places", label: "Saved Places" },
   { href: "/budget", label: "Budget" }
