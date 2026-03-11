@@ -60,18 +60,22 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
     <div className="relative overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
       {imageUrl ? (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-40"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${imageUrl})`,
+            opacity: 0.75
+          }}
         />
       ) : null}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(255,251,245,0.5)]" />
 
-      <div className="relative bg-[rgba(255,251,245,0.92)] px-8 py-10 backdrop-blur-[2px]">
-        <div className="space-y-4 border-b border-[#ece4d8] pb-7">
+      <div className="relative bg-[rgba(255,251,245,0.7)] px-8 py-10 backdrop-blur-[0.5px]">
+        <div className="space-y-4 border-b border-[rgba(140,112,74,0.2)] pb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h3 className="font-display text-4xl text-ink md:text-5xl">{day.city}</h3>
+                <h3 className="font-display text-4xl tracking-[-0.03em] text-ink md:text-5xl">{day.city}</h3>
                 <p className="mt-3 text-base text-ink/74">{day.title}</p>
                 {day.accommodation ? (
                   <p className="mt-3 text-sm uppercase tracking-[0.22em] text-olive/80">

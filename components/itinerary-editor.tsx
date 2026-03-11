@@ -180,7 +180,7 @@ export function ItineraryEditor({
           }
         />
 
-        <div className="space-y-5">
+        <div className="space-y-10">
           {visibleDays.length ? (
             visibleDays.map((day) => (
               <TimelineDay
