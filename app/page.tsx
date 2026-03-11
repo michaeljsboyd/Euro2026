@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, CircleDollarSign, MapPinned, Plane } from "lucide-react";
 
-import { AccommodationSnapshot } from "@/components/accommodation-snapshot";
+import { AccommodationSnapshotPanel } from "@/components/accommodation-snapshot-panel";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
@@ -14,6 +14,7 @@ export default async function DashboardPage() {
   const data = await getPlannerData();
   const accommodations = [
     {
+      id: "stay-paris-san-regis",
       city: "Paris",
       hotel: "San Regis",
       status: "booked" as const,
@@ -21,6 +22,7 @@ export default async function DashboardPage() {
       phone: "+33144951616"
     },
     {
+      id: "stay-cap-ferrat-royal-riviera",
       city: "Cap Ferrat",
       hotel: "Royal Riviera",
       status: "booked" as const,
@@ -28,6 +30,7 @@ export default async function DashboardPage() {
       phone: "+33493763100"
     },
     {
+      id: "stay-ibiza-destino",
       city: "Ibiza",
       hotel: "Destino",
       status: "tentative" as const,
@@ -35,6 +38,7 @@ export default async function DashboardPage() {
       phone: "+34971317411"
     },
     {
+      id: "stay-sicily-grand-hotel-timeo",
       city: "Sicily",
       hotel: "Grand Hotel Timeo",
       status: "tentative" as const,
@@ -42,6 +46,7 @@ export default async function DashboardPage() {
       phone: "+3909426270200"
     },
     {
+      id: "stay-rome-hasler",
       city: "Rome",
       hotel: "Hasler",
       status: "booked" as const,
@@ -138,7 +143,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <SectionCard title="Accommodation Snapshot" subtitle="A clean hotel overview across the key stays on the trip.">
-          <AccommodationSnapshot accommodations={accommodations} />
+          <AccommodationSnapshotPanel initialAccommodations={accommodations} />
         </SectionCard>
 
         <SectionCard title="Planner Notes" subtitle="The seeded v1 data is designed to be easy to replace with your real trip details.">
