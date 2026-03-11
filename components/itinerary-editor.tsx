@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarPlus2, Trash2, X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 
+import { useTripContext } from "@/context/TripContext";
 import { PageHeader } from "@/components/page-header";
 import { TimelineDay } from "@/components/timeline-day";
 import { Day, DaySection, Event, BookingStatus } from "@/lib/types";
-import { useSharedEvents } from "@/lib/use-shared-events";
 
 interface ItineraryEditorProps {
-  days: Day[];
-  events: Event[];
   cityFilter: string | null;
+  dateFilter?: string | null;
   eyebrow?: string;
   title?: string;
   description: string;
@@ -62,9 +61,8 @@ function draftFromEvent(event: Event): EditorDraft {
 }
 
 export function ItineraryEditor({
-  days,
-  events,
   cityFilter,
+  dateFilter = null,
   eyebrow = "Itinerary",
   title = "Itinerary",
   description,
@@ -73,8 +71,20 @@ export function ItineraryEditor({
   emptyTitle = "No itinerary found",
   emptyDescription = "There are no days matching this city filter in the seeded trip plan."
 }: ItineraryEditorProps) {
-  const { events: localEvents, setEvents: setLocalEvents } = useSharedEvents(events);
+  const { days, events: localEvents, setEvents: setLocalEvents } = useTripContext();
   const [draft, setDraft] = useState<EditorDraft | null>(null);
+
+  const visibleDays = days.filter((day) => {
+    if (dateFilter) {
+      return day.date === dateFilter;
+    }
+
+    if (cityFilter) {
+      return day.city.toLowerCase() === cityFilter.toLowerCase();
+    }
+
+    return true;
+  });
 
   const openExistingEvent = (event: Event) => {
     setDraft(draftFromEvent(event));
@@ -149,7 +159,7 @@ export function ItineraryEditor({
 
   useEffect(() => {
     setDraft(null);
-  }, [cityFilter]);
+  }, [cityFilter, dateFilter]);
 
   return (
     <>
@@ -171,8 +181,8 @@ export function ItineraryEditor({
         />
 
         <div className="space-y-5">
-          {days.length ? (
-            days.map((day) => (
+          {visibleDays.length ? (
+            visibleDays.map((day) => (
               <TimelineDay
                 key={day.id}
                 day={day}
