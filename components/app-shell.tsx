@@ -75,6 +75,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                           active ? "hidden" : "group-hover:opacity-100"
                         )}
                       />
+                      <span
+                        className={clsx(
+                          "absolute bottom-1.5 left-1/2 h-px w-0 -translate-x-1/2 bg-current transition-all duration-300 ease-out",
+                          active ? "w-7" : "group-hover:w-5"
+                        )}
+                      />
                       <span className="relative z-10">{link.label}</span>
                     </Link>
                   );

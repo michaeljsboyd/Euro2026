@@ -30,7 +30,7 @@ export function StatusBadge({ status }: { status: BookingStatus }) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ring-1 ring-inset",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ring-1 ring-inset transition-transform duration-300 hover:scale-[1.03]",
         styles[status]
       )}
     >

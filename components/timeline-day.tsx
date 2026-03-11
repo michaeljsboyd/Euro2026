@@ -164,7 +164,7 @@ export function TimelineDay({
   };
 
   return (
-    <div className="overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
+    <div className="overflow-hidden rounded-[32px] border border-white/60 shadow-panel transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(31,36,48,0.08)]">
       {imageUrl ? (
         <div
           className="h-40 rounded-t-[32px] bg-cover bg-center"
