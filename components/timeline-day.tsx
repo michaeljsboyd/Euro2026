@@ -56,21 +56,20 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
   }
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-[#f7f3ea] shadow-panel">
+    <section className="relative rounded-[28px] border border-white/50 bg-white/70 px-8 py-10 shadow-[0_20px_60px_rgba(31,36,48,0.06)] backdrop-blur-sm">
       <div
-        className="absolute inset-x-0 top-0 h-[160px] bg-cover bg-center scale-[1.05]"
+        className="absolute inset-0 bg-cover bg-center opacity-[0.06]"
         style={{
           backgroundImage: `url(${cityImages[day.city] || "/images/paris.jpeg"})`
         }}
       />
-      <div className="absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-black/35 via-black/10 to-[#f7f3ea]" />
 
-      <div className="relative z-10 p-7 pt-[120px]">
-        <div className="space-y-5 border-b border-[#ece4d8] pb-8">
+      <div className="relative z-10">
+        <div className="space-y-4 border-b border-[#ece4d8] pb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="relative -mt-6">
+              <div>
                 <h3 className="font-display text-4xl text-ink md:text-5xl">{day.city}</h3>
                 <p className="mt-3 text-base text-ink/74">{day.title}</p>
                 {day.accommodation ? (
@@ -85,10 +84,10 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
           {day.notes ? <p className="max-w-3xl text-sm leading-7 text-ink/62">{day.notes}</p> : null}
         </div>
 
-        <div className="grid gap-8 pt-8 lg:grid-cols-3">
+        <div className="grid gap-6 pt-7 lg:grid-cols-3">
           {sections.map((section) => (
-            <div key={section} className="space-y-5">
-              <div className="space-y-3">
+            <div key={section} className="space-y-4">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive/80">{section}</p>
                   <button
@@ -125,16 +124,12 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
                       </p>
                       {event.notes ? (
                         <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
-                      ) : null}
-                    </button>
-                  ))
-                ) : (
-                  <div className="rounded-[24px] border border-dashed border-[#ddd2c0] bg-[rgba(255,253,250,0.7)] p-5">
-                    <p className="text-sm leading-7 text-ink/48">
-                      Nothing scheduled here yet.
-                    </p>
-                  </div>
-                )}
+                    ) : null}
+                  </button>
+                ))
+              ) : (
+                <p className="text-sm italic text-ink/40">Nothing scheduled yet.</p>
+              )}
               </div>
             </div>
           ))}
