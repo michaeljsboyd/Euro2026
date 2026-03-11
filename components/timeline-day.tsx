@@ -56,20 +56,21 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
   }
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-white/78 p-6 shadow-panel backdrop-blur md:p-8">
+    <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-[#f7f3ea] shadow-panel">
       <div
-        className="absolute inset-0 bg-cover bg-center blur-[12px] opacity-[0.18] scale-110"
+        className="absolute inset-x-0 top-0 h-[160px] bg-cover bg-center scale-[1.05]"
         style={{
           backgroundImage: `url(${cityImages[day.city] || "/images/paris.jpeg"})`
         }}
       />
+      <div className="absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-black/35 via-black/10 to-[#f7f3ea]" />
 
-      <div className="relative z-10">
+      <div className="relative z-10 p-7 pt-[120px]">
         <div className="space-y-5 border-b border-[#ece4d8] pb-8">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
+              <div className="relative -mt-6">
                 <h3 className="font-display text-4xl text-ink md:text-5xl">{day.city}</h3>
                 <p className="mt-3 text-base text-ink/74">{day.title}</p>
                 {day.accommodation ? (
