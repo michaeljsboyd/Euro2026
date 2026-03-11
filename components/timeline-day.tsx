@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Clock3, Plus } from "lucide-react";
 
 import { formatDate, formatTime } from "@/lib/format";
@@ -12,6 +13,13 @@ interface TimelineDayProps {
 }
 
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
+const cityImages: Record<string, string> = {
+  Paris: "/images/paris.jpg",
+  Nice: "/images/nice.jpg",
+  Ibiza: "/images/ibiza.jpg",
+  Sicily: "/images/sicily.jpg",
+  Rome: "/images/rome.jpg"
+};
 
 function sortEventsByTime(events: Event[]) {
   return [...events].sort((left, right) => {
@@ -48,9 +56,27 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
     groupedEvents[event.section].push(event);
   }
 
+  const cityImage = cityImages[day.city];
+
   return (
-    <section className="rounded-[32px] border border-white/60 bg-white/78 p-6 shadow-panel backdrop-blur md:p-8">
-      <div className="space-y-5 border-b border-[#ece4d8] pb-8">
+    <section className="relative overflow-hidden rounded-[32px] border border-white/60 bg-white/78 p-6 shadow-panel backdrop-blur md:p-8">
+      {cityImage ? (
+        <>
+          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <Image
+              src={cityImage}
+              alt=""
+              fill
+              priority={false}
+              sizes="100vw"
+              className="scale-110 object-cover object-center opacity-[0.11] blur-lg"
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(246,238,225,0.42)_0%,rgba(255,253,250,0.7)_45%,rgba(255,253,250,0.9)_100%)]" />
+        </>
+      ) : null}
+
+      <div className="relative z-10 space-y-5 border-b border-[#ece4d8] pb-8">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
         <div>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -69,7 +95,7 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
         {day.notes ? <p className="max-w-3xl text-sm leading-7 text-ink/62">{day.notes}</p> : null}
       </div>
 
-      <div className="grid gap-8 pt-8 lg:grid-cols-3">
+      <div className="relative z-10 grid gap-8 pt-8 lg:grid-cols-3">
         {sections.map((section) => (
           <div key={section} className="space-y-5">
             <div className="space-y-3">
