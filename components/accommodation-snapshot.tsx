@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { ExternalLink, Phone } from "lucide-react";
 
+import { SectionCard } from "@/components/section-card";
+import { initialAccommodationStays } from "@/lib/accommodation-stays";
+
 export type AccommodationStatus = "booked" | "tentative";
 
 export interface AccommodationStay {
@@ -14,11 +17,6 @@ export interface AccommodationStay {
   status: AccommodationStatus;
   website: string;
   phone: string;
-}
-
-interface AccommodationSnapshotProps {
-  accommodations: AccommodationStay[];
-  onToggleStatus: (id: string) => void;
 }
 
 interface AccommodationCardProps {
@@ -127,14 +125,22 @@ export function AccommodationCard({
   );
 }
 
-export function AccommodationSnapshot({
-  accommodations,
-  onToggleStatus
-}: AccommodationSnapshotProps) {
+export function AccommodationSnapshot() {
+  const [items, setItems] = useState<AccommodationStay[]>(initialAccommodationStays);
   const [animatingId, setAnimatingId] = useState<string | null>(null);
+  const bookedStays = items.filter((stay) => stay.status === "booked");
 
   const toggleStatus = (id: string) => {
-    onToggleStatus(id);
+    setItems((current) =>
+      current.map((stay) =>
+        stay.id === id
+          ? {
+              ...stay,
+              status: stay.status === "booked" ? "tentative" : "booked"
+            }
+          : stay
+      )
+    );
     setAnimatingId(id);
     window.setTimeout(() => {
       setAnimatingId((current) => (current === id ? null : current));
@@ -142,15 +148,37 @@ export function AccommodationSnapshot({
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-      {accommodations.map((accommodation) => (
-        <AccommodationCard
-          key={accommodation.id}
-          accommodation={accommodation}
-          onToggleStatus={toggleStatus}
-          isAnimating={animatingId === accommodation.id}
-        />
-      ))}
+    <div className="space-y-6">
+      <SectionCard
+        title="Accommodation Snapshot"
+        subtitle="A clean hotel overview across the key stays on the trip."
+      >
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+          {items.map((accommodation) => (
+            <AccommodationCard
+              key={accommodation.id}
+              accommodation={accommodation}
+              onToggleStatus={toggleStatus}
+              isAnimating={animatingId === accommodation.id}
+            />
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Booked"
+        subtitle="Confirmed stays pulled directly from the current accommodation status."
+      >
+        {bookedStays.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+            {bookedStays.map((stay) => (
+              <AccommodationCard key={stay.id} accommodation={stay} href="/bookings" />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-ink/60">No confirmed stays yet.</p>
+        )}
+      </SectionCard>
     </div>
   );
 }

@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { CalendarDays, CircleDollarSign, MapPinned, Plane } from "lucide-react";
 
-import { AccommodationSnapshotPanel } from "@/components/accommodation-snapshot-panel";
+import { AccommodationSnapshot } from "@/components/accommodation-snapshot";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { TodoListCard } from "@/components/todo-list-card";
-import { initialAccommodationStays } from "@/lib/accommodation-stays";
 import { cityStays } from "@/lib/city-stays";
 import { formatCurrency, formatDateRange, slugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
@@ -101,7 +100,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <AccommodationSnapshotPanel initialAccommodations={initialAccommodationStays} />
+        <AccommodationSnapshot />
 
         <SectionCard title="Planner Notes" subtitle="The seeded v1 data is designed to be easy to replace with your real trip details.">
           <div className="grid gap-4 md:grid-cols-2">
