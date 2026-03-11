@@ -169,7 +169,7 @@ export function ItineraryEditor({
           title={title}
           description={description}
           action={
-            cityFilter && actionHref && actionLabel ? (
+            (cityFilter || dateFilter) && actionHref && actionLabel ? (
               <Link
                 href={actionHref}
                 className="rounded-full border border-white/70 bg-white/75 px-4 py-2 text-sm font-medium text-ink/72 transition-all duration-300 hover:bg-white hover:text-ink"

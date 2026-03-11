@@ -2,7 +2,9 @@
 
 import {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useMemo,
@@ -25,7 +27,7 @@ interface TripContextValue {
   timelineDays: TimelineDay[];
   accommodationOptions: string[];
   cityOptions: string[];
-  setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+  setEvents: Dispatch<SetStateAction<Event[]>>;
   updateDay: (dayId: string, updates: Partial<Day>) => void;
   toggleDayStatus: (dayId: string) => void;
   toggleTravelDay: (dayId: string) => void;

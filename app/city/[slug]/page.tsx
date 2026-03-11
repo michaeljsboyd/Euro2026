@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ItineraryEditor } from "@/components/itinerary-editor";
+import { TripProvider } from "@/context/TripContext";
 import { cityStays } from "@/lib/city-stays";
 import { formatDateRange, slugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
@@ -21,22 +22,21 @@ export default async function CityPage({ params }: CityPageProps) {
 
   const data = await getPlannerData();
   const cityDays = data.days.filter((day) => day.city === cityStay.city);
-  const cityEvents = data.events.filter((event) => event.city === cityStay.city);
   const accommodations = [...new Set(cityDays.map((day) => day.accommodation).filter(Boolean))];
   const accommodationText = accommodations.length ? accommodations.join(" • ") : "Accommodation not added yet";
 
   return (
-    <ItineraryEditor
-      days={cityDays}
-      events={cityEvents}
-      cityFilter={cityStay.city}
-      eyebrow="City Stay"
-      title={cityStay.city}
-      description={`${formatDateRange(cityStay.start, cityStay.end)} • ${cityStay.nights} ${cityStay.nights === 1 ? "night" : "nights"} • ${accommodationText}`}
-      actionHref="/itinerary"
-      actionLabel="View full itinerary"
-      emptyTitle="No city itinerary found"
-      emptyDescription="There are no itinerary days stored for this city yet."
-    />
+    <TripProvider initialDays={data.days} initialEvents={data.events}>
+      <ItineraryEditor
+        cityFilter={cityStay.city}
+        eyebrow="City Stay"
+        title={cityStay.city}
+        description={`${formatDateRange(cityStay.start, cityStay.end)} • ${cityStay.nights} ${cityStay.nights === 1 ? "night" : "nights"} • ${accommodationText}`}
+        actionHref="/itinerary"
+        actionLabel="View full itinerary"
+        emptyTitle="No city itinerary found"
+        emptyDescription="There are no itinerary days stored for this city yet."
+      />
+    </TripProvider>
   );
 }

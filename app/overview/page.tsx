@@ -1,8 +1,13 @@
-import { OverviewSummary } from "@/components/overview-summary";
+import { TripProvider } from "@/context/TripContext";
+import { TripTimeline } from "@/components/trip-timeline";
 import { getPlannerData } from "@/lib/supabase/queries";
 
 export default async function OverviewPage() {
   const data = await getPlannerData();
 
-  return <OverviewSummary days={data.days} initialEvents={data.events} />;
+  return (
+    <TripProvider initialDays={data.days} initialEvents={data.events}>
+      <TripTimeline />
+    </TripProvider>
+  );
 }
