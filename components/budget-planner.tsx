@@ -11,128 +11,105 @@ interface BudgetPlannerProps {
   currency?: string;
 }
 
-interface BudgetColumn {
-  id: string;
-  label: string;
-  derived?: boolean;
-}
-
-interface BudgetRow {
+type BudgetRow = {
   id: string;
   category: string;
   values: Record<string, number>;
+};
+
+const defaultColumns = ["Planned", "Spent"] as const;
+
+function createRow(name: string, columns: readonly string[]): BudgetRow {
+  const values: Record<string, number> = {};
+  columns.forEach((column) => {
+    values[column] = 0;
+  });
+
+  return {
+    id: crypto.randomUUID(),
+    category: name,
+    values
+  };
 }
-
-const defaultColumns: BudgetColumn[] = [
-  { id: "planned", label: "Planned" },
-  { id: "spent", label: "Spent" },
-  { id: "remaining", label: "Remaining", derived: true }
-];
-
-const defaultRows: BudgetRow[] = [
-  { id: "row-flights", category: "Flights", values: { planned: 0, spent: 0 } },
-  { id: "row-accommodation", category: "Accommodation", values: { planned: 0, spent: 0 } },
-  { id: "row-dining", category: "Dining", values: { planned: 0, spent: 0 } },
-  { id: "row-shopping", category: "Shopping", values: { planned: 0, spent: 0 } },
-  { id: "row-beach-clubs", category: "Beach Clubs", values: { planned: 0, spent: 0 } },
-  { id: "row-party-supplies", category: "Party Supplies", values: { planned: 0, spent: 0 } }
-];
 
 function parseAmount(value: string) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function getDerivedValue(row: BudgetRow, columnId: string) {
-  if (columnId === "remaining") {
-    return (row.values.planned ?? 0) - (row.values.spent ?? 0);
-  }
-
-  return row.values[columnId] ?? 0;
+function SummaryCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[24px] border border-[#e8dece] bg-white/80 p-6 shadow-[0_18px_40px_rgba(112,88,57,0.08)]">
+      <p className="text-[11px] uppercase tracking-[0.26em] text-olive/70">{label}</p>
+      <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink">{value}</p>
+    </div>
+  );
 }
 
 export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
-  const [columns, setColumns] = useState(defaultColumns);
-  const [rows, setRows] = useState(defaultRows);
+  const [columns, setColumns] = useState<string[]>([...defaultColumns]);
+  const [rows, setRows] = useState<BudgetRow[]>([
+    createRow("Flights", defaultColumns),
+    createRow("Accommodation", defaultColumns),
+    createRow("Dining", defaultColumns),
+    createRow("Shopping", defaultColumns),
+    createRow("Beach Clubs", defaultColumns),
+    createRow("Party Supplies", defaultColumns)
+  ]);
 
   const totals = useMemo(() => {
     return columns.reduce<Record<string, number>>((accumulator, column) => {
-      accumulator[column.id] = rows.reduce(
-        (sum, row) => sum + getDerivedValue(row, column.id),
-        0
-      );
+      accumulator[column] = rows.reduce((sum, row) => sum + (row.values[column] ?? 0), 0);
       return accumulator;
     }, {});
   }, [columns, rows]);
 
+  const totalPlanned = totals.Planned ?? 0;
+  const totalSpent = totals.Spent ?? 0;
+  const remaining = totalPlanned - totalSpent;
+  const percentUsed = totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+
   const addCategory = () => {
-    setRows((current) => [
-      ...current,
-      {
-        id: crypto.randomUUID(),
-        category: "New Category",
-        values: columns.reduce<Record<string, number>>((accumulator, column) => {
-          if (!column.derived) {
-            accumulator[column.id] = 0;
-          }
-          return accumulator;
-        }, {})
-      }
-    ]);
+    setRows((current) => [...current, createRow("New Category", columns)]);
   };
 
-  const deleteCategory = (rowId: string) => {
-    setRows((current) => current.filter((row) => row.id !== rowId));
+  const removeCategory = (id: string) => {
+    setRows((current) => current.filter((row) => row.id !== id));
   };
 
-  const updateCategoryName = (rowId: string, value: string) => {
+  const updateCategory = (rowId: string, name: string) => {
     setRows((current) =>
-      current.map((row) => (row.id === rowId ? { ...row, category: value } : row))
+      current.map((row) => (row.id === rowId ? { ...row, category: name } : row))
     );
   };
 
-  const updateValue = (rowId: string, columnId: string, value: string) => {
+  const updateCell = (rowId: string, column: string, value: string) => {
     setRows((current) =>
       current.map((row) =>
         row.id === rowId
-          ? {
-              ...row,
-              values: {
-                ...row.values,
-                [columnId]: parseAmount(value)
-              }
-            }
+          ? { ...row, values: { ...row.values, [column]: parseAmount(value) } }
           : row
       )
     );
   };
 
   const addColumn = () => {
-    const nextIndex = columns.filter((column) => !column.derived).length + 1;
-    const id = `column-${Date.now()}`;
+    const name = window.prompt("New column name?");
+    if (!name) {
+      return;
+    }
 
-    setColumns((current) => [
-      ...current.filter((column) => !column.derived),
-      { id, label: `Column ${nextIndex}` },
-      ...current.filter((column) => column.derived)
-    ]);
+    const trimmedName = name.trim();
+    if (!trimmedName || columns.includes(trimmedName)) {
+      return;
+    }
 
+    setColumns((current) => [...current, trimmedName]);
     setRows((current) =>
       current.map((row) => ({
         ...row,
-        values: {
-          ...row.values,
-          [id]: 0
-        }
+        values: { ...row.values, [trimmedName]: 0 }
       }))
-    );
-  };
-
-  const updateColumnName = (columnId: string, value: string) => {
-    setColumns((current) =>
-      current.map((column) =>
-        column.id === columnId && !column.derived ? { ...column, label: value } : column
-      )
     );
   };
 
@@ -141,12 +118,19 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
       <PageHeader
         eyebrow="Budget"
         title="Budget Planner"
-        description="A compact working budget sheet with editable categories, flexible spend columns, and live totals."
+        description="A live working budget with editable categories, flexible spend columns, and a compact trip summary."
       />
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard label="Total Planned" value={formatCurrency(totalPlanned, currency)} />
+        <SummaryCard label="Total Spent" value={formatCurrency(totalSpent, currency)} />
+        <SummaryCard label="Remaining" value={formatCurrency(remaining, currency)} />
+        <SummaryCard label="% Used" value={`${percentUsed.toFixed(0)}%`} />
+      </div>
 
       <SectionCard
         title="Budget Table"
-        subtitle="Add categories, add numeric columns, and keep the running totals clean."
+        subtitle="Edit categories inline, add working columns, and keep totals current."
         action={
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
@@ -170,79 +154,71 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
       >
         <div className="overflow-hidden rounded-[24px] border border-[#e8dece] bg-[#fffdfa]">
           <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse">
-              <thead>
-                <tr className="bg-[#f7f2ea]">
+            <table className="min-w-full border-collapse text-sm">
+              <thead className="bg-[#f7f2ea]">
+                <tr>
                   <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
                     Category
                   </th>
                   {columns.map((column) => (
                     <th
-                      key={column.id}
+                      key={column}
                       className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive"
                     >
-                      {column.derived ? (
-                        column.label
-                      ) : (
-                        <input
-                          value={column.label}
-                          onChange={(event) => updateColumnName(column.id, event.target.value)}
-                          className="w-full min-w-[120px] border-none bg-transparent p-0 text-xs font-semibold uppercase tracking-[0.22em] text-olive outline-none"
-                        />
-                      )}
+                      {column}
                     </th>
                   ))}
+                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
+                    Remaining
+                  </th>
                   <th className="w-[56px] px-5 py-4" />
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row) => (
-                  <tr key={row.id} className="border-t border-[#efe4d3]">
-                    <td className="px-5 py-4">
-                      <input
-                        value={row.category}
-                        onChange={(event) => updateCategoryName(row.id, event.target.value)}
-                        className="w-full min-w-[180px] border-none bg-transparent p-0 text-sm font-semibold text-ink outline-none"
-                      />
-                    </td>
-                    {columns.map((column) => (
-                      <td key={column.id} className="px-5 py-4">
-                        {column.derived ? (
-                          <p
-                            className={`text-sm font-semibold ${
-                              getDerivedValue(row, column.id) >= 0
-                                ? "text-emerald-800"
-                                : "text-rose-700"
-                            }`}
-                          >
-                            {formatCurrency(getDerivedValue(row, column.id), currency)}
-                          </p>
-                        ) : (
+                {rows.map((row) => {
+                  const planned = row.values.Planned ?? 0;
+                  const spent = row.values.Spent ?? 0;
+                  const rowRemaining = planned - spent;
+
+                  return (
+                    <tr key={row.id} className="border-t border-[#efe4d3]">
+                      <td className="px-5 py-4">
+                        <input
+                          value={row.category}
+                          onChange={(event) => updateCategory(row.id, event.target.value)}
+                          className="w-full min-w-[180px] border-none bg-transparent p-0 text-sm font-semibold text-ink outline-none"
+                        />
+                      </td>
+                      {columns.map((column) => (
+                        <td key={column} className="px-5 py-4">
                           <input
                             type="number"
-                            min="0"
-                            step="1"
-                            value={row.values[column.id] ?? 0}
-                            onChange={(event) =>
-                              updateValue(row.id, column.id, event.target.value)
-                            }
+                            value={row.values[column] ?? 0}
+                            onChange={(event) => updateCell(row.id, column, event.target.value)}
                             className="w-full min-w-[120px] rounded-[18px] border border-[#e7dccd] bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-gold"
                           />
-                        )}
-                      </td>
-                    ))}
-                    <td className="px-5 py-4">
-                      <button
-                        type="button"
-                        onClick={() => deleteCategory(row.id)}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ead8cf] bg-[#fff6f2] text-[#7c4a42] transition-all duration-300 hover:bg-[#fff1ea]"
-                        aria-label={`Delete ${row.category}`}
+                        </td>
+                      ))}
+                      <td
+                        className={`px-5 py-4 text-sm font-semibold ${
+                          rowRemaining >= 0 ? "text-emerald-800" : "text-rose-700"
+                        }`}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {formatCurrency(rowRemaining, currency)}
+                      </td>
+                      <td className="px-5 py-4">
+                        <button
+                          type="button"
+                          onClick={() => removeCategory(row.id)}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ead8cf] bg-[#fff6f2] text-[#7c4a42] transition-all duration-300 hover:bg-[#fff1ea]"
+                          aria-label={`Delete ${row.category}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
               <tfoot>
                 <tr className="border-t border-[#e8dece] bg-[#f7f2ea]">
@@ -250,10 +226,17 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
                     Totals
                   </td>
                   {columns.map((column) => (
-                    <td key={column.id} className="px-5 py-4 text-sm font-semibold text-ink">
-                      {formatCurrency(totals[column.id] ?? 0, currency)}
+                    <td key={column} className="px-5 py-4 text-sm font-semibold text-ink">
+                      {formatCurrency(totals[column] ?? 0, currency)}
                     </td>
                   ))}
+                  <td
+                    className={`px-5 py-4 text-sm font-semibold ${
+                      remaining >= 0 ? "text-emerald-800" : "text-rose-700"
+                    }`}
+                  >
+                    {formatCurrency(remaining, currency)}
+                  </td>
                   <td className="px-5 py-4" />
                 </tr>
               </tfoot>
