@@ -54,6 +54,16 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+function getCategoryAmount(rows: BudgetRow[], categories: string[]) {
+  return rows.reduce((sum, row) => {
+    if (!categories.includes(row.category.trim())) {
+      return sum;
+    }
+
+    return sum + (row.values.Planned ?? 0);
+  }, 0);
+}
+
 export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
   const [columns, setColumns] = useState<string[]>([...defaultColumns]);
   const [rows, setRows] = useState<BudgetRow[]>([
@@ -76,6 +86,12 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
   const totalSpent = totals.Spent ?? 0;
   const remaining = totalPlanned - totalSpent;
   const percentUsed = totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+  const categoryBreakdown = [
+    { label: "Flights", amount: getCategoryAmount(rows, ["Flights"]) },
+    { label: "Hotels", amount: getCategoryAmount(rows, ["Hotels", "Accommodation"]) },
+    { label: "Dining", amount: getCategoryAmount(rows, ["Dining"]) },
+    { label: "Activities", amount: getCategoryAmount(rows, ["Activities"]) }
+  ];
 
   const addCategory = () => {
     setRows((current) => [...current, createRow("New Category", columns)]);
@@ -128,6 +144,48 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
         title="Budget Planner"
         description="A live working budget with editable categories, flexible spend columns, and a compact trip summary."
       />
+
+      <SectionCard
+        title="Budget Summary"
+        subtitle="A quick top-line read on estimated spend, committed spend, and category weighting."
+      >
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-4 border-b border-[#eee3d3] pb-3">
+              <p className="text-sm uppercase tracking-[0.18em] text-olive/75">Total Estimated Spend</p>
+              <p className="text-lg font-semibold text-ink">{formatCurrency(totalPlanned, currency)}</p>
+            </div>
+            <div className="flex items-center justify-between gap-4 border-b border-[#eee3d3] pb-3">
+              <p className="text-sm uppercase tracking-[0.18em] text-olive/75">Total Booked Spend</p>
+              <p className="text-lg font-semibold text-ink">{formatCurrency(totalSpent, currency)}</p>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm uppercase tracking-[0.18em] text-olive/75">Remaining Budget</p>
+              <p
+                className={`text-lg font-semibold ${
+                  remaining >= 0 ? "text-emerald-800" : "text-rose-700"
+                }`}
+              >
+                {formatCurrency(remaining, currency)}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-olive/70">
+              Category Breakdown
+            </p>
+            <div className="space-y-2">
+              {categoryBreakdown.map((item) => (
+                <div key={item.label} className="flex items-center justify-between gap-4 text-sm">
+                  <p className="text-ink/65">{item.label}</p>
+                  <p className="font-medium text-ink">{formatCurrency(item.amount, currency)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </SectionCard>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="Total Planned" value={formatCurrency(totalPlanned, currency)} />
