@@ -44,7 +44,7 @@ function loadGoogleMaps(apiKey: string) {
     }
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
     script.async = true;
     script.defer = true;
     script.dataset.googleMaps = "true";
@@ -67,6 +67,7 @@ export function TripMap() {
     }
 
     let cancelled = false;
+    const intervalIds: number[] = [];
 
     async function initialiseMap() {
       try {
@@ -125,7 +126,35 @@ export function TripMap() {
           return point;
         });
 
-        stops.forEach((stop) => {
+        const routeSegments: any[] = [];
+
+        for (let index = 0; index < stops.length - 1; index += 1) {
+          const current = stops[index];
+          const next = stops[index + 1];
+          const segment = new window.google.maps.Polyline({
+            path: [
+              { lat: current.lat, lng: current.lng },
+              { lat: next.lat, lng: next.lng }
+            ],
+            geodesic: true,
+            strokeColor: "#bf9b63",
+            strokeOpacity: 0.85,
+            strokeWeight: 3,
+            map
+          });
+
+          routeSegments.push(segment);
+        }
+
+        stops.forEach((stop, stopIndex) => {
+          const baseIcon = {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            fillColor: "#bf9b63",
+            fillOpacity: 1,
+            strokeColor: "#fffaf4",
+            strokeWeight: 4,
+            scale: 11
+          };
           const marker = new window.google.maps.Marker({
             position: { lat: stop.lat, lng: stop.lng },
             map,
@@ -136,14 +165,7 @@ export function TripMap() {
               fontSize: "13px",
               fontWeight: "700"
             },
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              fillColor: "#bf9b63",
-              fillOpacity: 1,
-              strokeColor: "#fffaf4",
-              strokeWeight: 4,
-              scale: 11
-            }
+            icon: baseIcon
           });
 
           const infoWindow = new window.google.maps.InfoWindow({
@@ -158,28 +180,42 @@ export function TripMap() {
           marker.addListener("click", () => {
             infoWindow.open({ anchor: marker, map });
           });
-        });
 
-        new window.google.maps.Polyline({
-          path: routePath,
-          geodesic: true,
-          strokeColor: "#bf9b63",
-          strokeOpacity: 0.85,
-          strokeWeight: 3,
-          map
+          marker.addListener("mouseover", () => {
+            marker.setIcon({
+              ...baseIcon,
+              scale: 13
+            });
+
+            routeSegments.forEach((segment, segmentIndex) => {
+              const connected = segmentIndex === stopIndex || segmentIndex === stopIndex - 1;
+              segment.setOptions({
+                strokeOpacity: connected ? 1 : 0.28
+              });
+            });
+          });
+
+          marker.addListener("mouseout", () => {
+            marker.setIcon(baseIcon);
+
+            routeSegments.forEach((segment) => {
+              segment.setOptions({
+                strokeOpacity: 0.85
+              });
+            });
+          });
         });
 
         for (let index = 0; index < stops.length - 1; index += 1) {
           const current = stops[index];
           const next = stops[index + 1];
-          const midpoint = {
-            lat: (current.lat + next.lat) / 2,
-            lng: (current.lng + next.lng) / 2
-          };
+          const start = new window.google.maps.LatLng(current.lat, current.lng);
+          const end = new window.google.maps.LatLng(next.lat, next.lng);
+          const midpoint = window.google.maps.geometry.spherical.interpolate(start, end, 0.5);
 
           bounds.extend(midpoint);
 
-          new window.google.maps.Marker({
+          const planeMarker = new window.google.maps.Marker({
             position: midpoint,
             map,
             title: `${current.name} to ${next.name}`,
@@ -198,6 +234,26 @@ export function TripMap() {
               fontWeight: "700"
             }
           });
+
+          const durationMs = 12000 + index * 2000;
+          const stepMs = 80;
+          let progress = index * 0.18;
+
+          const intervalId = window.setInterval(() => {
+            if (cancelled) {
+              return;
+            }
+
+            progress = (progress + stepMs / durationMs) % 1;
+            const nextPosition = window.google.maps.geometry.spherical.interpolate(
+              start,
+              end,
+              progress
+            );
+            planeMarker.setPosition(nextPosition);
+          }, stepMs);
+
+          intervalIds.push(intervalId);
         }
 
         map.fitBounds(bounds, 80);
@@ -212,6 +268,7 @@ export function TripMap() {
 
     return () => {
       cancelled = true;
+      intervalIds.forEach((intervalId) => window.clearInterval(intervalId));
     };
   }, []);
 
