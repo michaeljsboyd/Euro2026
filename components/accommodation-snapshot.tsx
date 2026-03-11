@@ -126,7 +126,9 @@ export function AccommodationCard({
 }
 
 export function AccommodationSnapshot() {
-  const [items, setItems] = useState<AccommodationStay[]>(initialAccommodationStays);
+  const [items, setItems] = useState<AccommodationStay[]>(() =>
+    initialAccommodationStays.map((stay) => ({ ...stay }))
+  );
   const [animatingId, setAnimatingId] = useState<string | null>(null);
   const bookedStays = items.filter((stay) => stay.status === "booked");
 
