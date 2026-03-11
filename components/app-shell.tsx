@@ -11,6 +11,7 @@ const links = [
   { href: "/", label: "Dashboard" },
   { href: "/itinerary", label: "Daily Flow" },
   { href: "/overview", label: "Overview" },
+  { href: "/flights", label: "Flights" },
   { href: "/bookings", label: "Bookings" },
   { href: "/places", label: "Saved Places" },
   { href: "/budget", label: "Budget" }
