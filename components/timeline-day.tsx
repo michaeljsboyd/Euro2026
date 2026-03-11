@@ -19,6 +19,11 @@ const cityImages: Record<string, string> = {
   Sicily: "/images/sicily.jpg",
   Rome: "/images/rome.jpg"
 };
+const emptySectionCopy: Record<DaySection, string> = {
+  Morning: "Open morning — add something special.",
+  Afternoon: "Free afternoon — beach club? museum?",
+  Evening: "Evening open — dinner reservation?"
+};
 
 function sortEventsByTime(events: Event[]) {
   return [...events].sort((left, right) => {
@@ -131,7 +136,7 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
                     </button>
                   ))
                 ) : (
-                  <p className="text-sm italic text-ink/40">Nothing scheduled yet.</p>
+                  <p className="text-sm italic text-ink/40">{emptySectionCopy[section]}</p>
                 )}
               </div>
             </div>

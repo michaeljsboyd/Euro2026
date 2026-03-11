@@ -7,6 +7,7 @@ import { Trash2, X } from "lucide-react";
 import { useTripContext } from "@/context/TripContext";
 import { PageHeader } from "@/components/page-header";
 import { TimelineDay } from "@/components/timeline-day";
+import { TripSummaryBar } from "@/components/trip-summary-bar";
 import { Day, DaySection, Event, BookingStatus } from "@/lib/types";
 
 interface ItineraryEditorProps {
@@ -85,6 +86,14 @@ export function ItineraryEditor({
 
     return true;
   });
+  const visibleDayIds = new Set(visibleDays.map((day) => day.id));
+  const visibleEvents = localEvents.filter((event) => visibleDayIds.has(event.dayId));
+  const bookedEventCount = visibleEvents.filter((event) => event.status === "booked").length;
+  const bookedPercent = visibleEvents.length ? (bookedEventCount / visibleEvents.length) * 100 : 0;
+  const totalEstimatedSpend = visibleEvents.reduce(
+    (sum, event) => sum + event.estimatedCost,
+    0
+  );
 
   const openExistingEvent = (event: Event) => {
     setDraft(draftFromEvent(event));
@@ -182,15 +191,23 @@ export function ItineraryEditor({
 
         <div className="space-y-10">
           {visibleDays.length ? (
-            visibleDays.map((day) => (
-              <TimelineDay
-                key={day.id}
-                day={day}
-                events={localEvents.filter((event) => event.dayId === day.id)}
-                onEventClick={openExistingEvent}
-                onAddEvent={openNewEvent}
+            <>
+              <TripSummaryBar
+                totalDays={visibleDays.length}
+                totalEvents={visibleEvents.length}
+                bookedPercent={bookedPercent}
+                totalEstimatedSpend={totalEstimatedSpend}
               />
-            ))
+              {visibleDays.map((day) => (
+                <TimelineDay
+                  key={day.id}
+                  day={day}
+                  events={visibleEvents.filter((event) => event.dayId === day.id)}
+                  onEventClick={openExistingEvent}
+                  onAddEvent={openNewEvent}
+                />
+              ))}
+            </>
           ) : (
             <div className="rounded-[26px] border border-white/60 bg-white/80 p-8 text-center shadow-panel">
               <p className="font-display text-3xl text-ink">{emptyTitle}</p>
