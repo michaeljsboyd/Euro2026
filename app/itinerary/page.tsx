@@ -28,7 +28,7 @@ export default async function ItineraryPage({ searchParams }: ItineraryPageProps
       events={visibleEvents}
       cityFilter={cityFilter}
       eyebrow="Itinerary"
-      title="Daily Flow"
+      title="Itinerary"
       description={description}
       actionHref="/itinerary"
       actionLabel="View full itinerary"

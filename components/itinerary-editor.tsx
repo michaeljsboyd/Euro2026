@@ -65,7 +65,7 @@ export function ItineraryEditor({
   events,
   cityFilter,
   eyebrow = "Itinerary",
-  title = "Daily Flow",
+  title = "Itinerary",
   description,
   actionHref,
   actionLabel,

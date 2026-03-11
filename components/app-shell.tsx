@@ -8,11 +8,11 @@ import clsx from "clsx";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { href: "/itinerary", label: "Daily Flow" },
+  { href: "/itinerary", label: "Itinerary" },
   { href: "/overview", label: "Overview" },
   { href: "/flights", label: "Flights" },
   { href: "/bookings", label: "Bookings" },
-  { href: "/places", label: "Saved Places" },
+  { href: "/places", label: "Wishlist" },
   { href: "/budget", label: "Budget" }
 ];
 
