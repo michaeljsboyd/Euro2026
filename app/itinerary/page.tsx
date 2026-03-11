@@ -1,4 +1,4 @@
-import { ItineraryEditor } from "@/components/itinerary-editor";
+import { ItineraryEditor } from "../../components/itinerary-editor";
 import { TripProvider } from "@/context/TripContext";
 import { unslugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
