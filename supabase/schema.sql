@@ -10,6 +10,10 @@ begin
     create type day_section as enum ('Morning', 'Afternoon', 'Evening');
   end if;
 
+  if not exists (select 1 from pg_type where typname = 'day_type') then
+    create type day_type as enum ('travel', 'standard');
+  end if;
+
   if not exists (select 1 from pg_type where typname = 'event_type') then
     create type event_type as enum ('Travel', 'Stay', 'Meal', 'Activity', 'Nightlife', 'Beach');
   end if;
@@ -44,6 +48,7 @@ create table if not exists days (
   date date not null,
   city text not null,
   title text not null,
+  day_type day_type not null default 'standard',
   accommodation text not null default '',
   status booking_status not null default 'tentative',
   notes text not null default '',

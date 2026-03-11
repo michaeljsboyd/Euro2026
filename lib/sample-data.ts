@@ -8,7 +8,7 @@ export const sampleData: PlannerData = {
     name: "Europe 2026",
     startDate: "2026-06-08",
     endDate: "2026-06-25",
-    cities: ["Paris", "Nice", "Ibiza", "Sicily", "Rome", "Rome / Travel"],
+    cities: ["Paris", "Nice", "Ibiza", "Sicily", "Rome"],
     currency: "EUR",
     notes: "Real itinerary seed in progress. Additional days can be added in the same morning, afternoon, evening structure."
   },
@@ -19,6 +19,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-08",
       city: "Paris",
       title: "Arrival day",
+      dayType: "standard",
       accommodation: "San Regis (Booked)",
       status: "booked",
       notes: ""
@@ -29,6 +30,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-09",
       city: "Paris",
       title: "Paris day",
+      dayType: "standard",
       accommodation: "San Regis (Booked)",
       status: "tentative",
       notes: ""
@@ -39,6 +41,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-10",
       city: "Paris",
       title: "Paris day",
+      dayType: "standard",
       accommodation: "San Regis (Booked)",
       status: "tentative",
       notes: ""
@@ -49,6 +52,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-11",
       city: "Nice",
       title: "Transfer south",
+      dayType: "travel",
       accommodation: "Royal Riviera",
       status: "booked",
       notes: ""
@@ -59,6 +63,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-12",
       city: "Nice",
       title: "Nice day",
+      dayType: "standard",
       accommodation: "Royal Riviera",
       status: "tentative",
       notes: ""
@@ -69,6 +74,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-13",
       city: "Nice",
       title: "Nice day",
+      dayType: "standard",
       accommodation: "Royal Riviera",
       status: "tentative",
       notes: ""
@@ -79,6 +85,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-14",
       city: "Nice",
       title: "Nice day",
+      dayType: "standard",
       accommodation: "Royal Riviera",
       status: "tentative",
       notes: ""
@@ -89,6 +96,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-15",
       city: "Ibiza",
       title: "Ibiza day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -99,6 +107,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-16",
       city: "Ibiza",
       title: "Ibiza day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -109,6 +118,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-17",
       city: "Sicily",
       title: "Sicily day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -119,6 +129,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-18",
       city: "Sicily",
       title: "Sicily day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -129,6 +140,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-19",
       city: "Sicily",
       title: "Sicily day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -139,6 +151,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-20",
       city: "Sicily",
       title: "Sicily day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -149,6 +162,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-21",
       city: "Sicily",
       title: "Sicily day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -159,6 +173,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-22",
       city: "Rome",
       title: "Rome day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -169,6 +184,7 @@ export const sampleData: PlannerData = {
       date: "2026-06-23",
       city: "Rome",
       title: "Rome day",
+      dayType: "standard",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -177,8 +193,9 @@ export const sampleData: PlannerData = {
       id: "day-2026-06-24",
       tripId,
       date: "2026-06-24",
-      city: "Rome / Travel",
-      title: "Rome / Travel day",
+      city: "Rome",
+      title: "Rome departure prep",
+      dayType: "travel",
       accommodation: "",
       status: "tentative",
       notes: ""
@@ -187,8 +204,9 @@ export const sampleData: PlannerData = {
       id: "day-2026-06-25",
       tripId,
       date: "2026-06-25",
-      city: "Rome / Travel",
-      title: "Rome / Travel day",
+      city: "Rome",
+      title: "Departure day",
+      dayType: "travel",
       accommodation: "",
       status: "tentative",
       notes: ""

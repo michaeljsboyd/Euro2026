@@ -21,6 +21,7 @@ function mapDay(row: Record<string, unknown>): Day {
     date: String(row.date),
     city: String(row.city),
     title: String(row.title),
+    dayType: (row.day_type as Day["dayType"]) ?? "standard",
     accommodation: String(row.accommodation ?? ""),
     status: row.status as Day["status"],
     notes: String(row.notes ?? "")

@@ -16,7 +16,7 @@ Private Next.js + Tailwind + Supabase trip planner for a family Europe holiday.
 - Bookings page with confirmation numbers, optional file links, dates, and notes
 - Saved places page grouped by city and type
 - Simple budget tracker
-- Seeded sample data for Paris, Cap Ferrat, Ibiza, Sicily, and Rome
+- Seeded sample data for Paris, Nice, Ibiza, Sicily, and Rome
 - Status tags across the app: `Booked`, `Tentative`, `Need to Book`
 
 ## Project structure

@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { StatusBadge } from "@/components/status-badge";
+import { cityStays } from "@/lib/city-stays";
 import { formatCurrency, formatDateRange, slugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
 
@@ -16,24 +17,18 @@ export default async function DashboardPage() {
     (item) => item.status === "tbc"
   ).length;
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
-  const citySummary = data.days.reduce<Record<string, { start: string; end: string; days: number }>>(
-    (accumulator, day) => {
-      const current = accumulator[day.city];
+  const citySummary = cityStays.map((stay) => {
+    const matchingDays = data.days.filter(
+      (day) => day.city === stay.city && day.date >= stay.start && day.date < stay.end
+    );
 
-      if (!current) {
-        accumulator[day.city] = { start: day.date, end: day.date, days: 1 };
-      } else {
-        accumulator[day.city] = {
-          start: current.start < day.date ? current.start : day.date,
-          end: current.end > day.date ? current.end : day.date,
-          days: current.days + 1
-        };
-      }
-
-      return accumulator;
-    },
-    {}
-  );
+    return {
+      city: stay.city,
+      start: stay.start,
+      end: stay.end,
+      days: matchingDays.length
+    };
+  });
 
   const nextBookings = data.bookings.slice(0, 4);
   const nextActions = [...data.events, ...data.bookings]
@@ -45,13 +40,13 @@ export default async function DashboardPage() {
       <PageHeader
         eyebrow="Trip Dashboard"
         title={data.trip.name}
-        description={`${formatDateRange(data.trip.startDate, data.trip.endDate)} across Paris, Cap Ferrat, Ibiza, Sicily, and Rome. Built as a premium private control panel with seeded data and Supabase-ready structure.`}
+        description={`${formatDateRange(data.trip.startDate, data.trip.endDate)} across Paris, Nice, Ibiza, Sicily, and Rome. Built as a premium private control panel with seeded data and Supabase-ready structure.`}
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Cities"
-          value={String(Object.keys(citySummary).length)}
+          value={String(citySummary.length)}
           detail="Five curated stops with a different rhythm at each stage."
           icon={<MapPinned className="h-5 w-5" />}
         />
@@ -81,16 +76,16 @@ export default async function DashboardPage() {
           subtitle="Date windows and trip pacing for each stop."
         >
           <div className="grid gap-4 md:grid-cols-2">
-            {Object.entries(citySummary).map(([city, summary]) => (
+            {citySummary.map((summary) => (
               <Link
-                key={city}
-                href={`/itinerary?city=${slugifyCity(city)}`}
+                key={`${summary.city}-${summary.start}`}
+                href={`/itinerary?city=${slugifyCity(summary.city)}`}
                 className="group rounded-[24px] bg-[#f7f2ea] p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#fbf7ef] hover:shadow-[0_22px_50px_rgba(31,36,48,0.09)]"
               >
                 <article className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="font-display text-3xl text-ink transition-colors duration-300 group-hover:text-[#171b24]">
-                      {city}
+                      {summary.city}
                     </h3>
                     <p className="mt-2 text-sm text-ink/65">
                       {formatDateRange(summary.start, summary.end)}

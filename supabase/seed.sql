@@ -11,14 +11,14 @@ values (
   'Europe 2026',
   '2026-06-08',
   '2026-06-25',
-  array['Paris', 'Nice', 'Ibiza', 'Sicily', 'Rome', 'Rome / Travel'],
+  array['Paris', 'Nice', 'Ibiza', 'Sicily', 'Rome'],
   'EUR',
   'Real itinerary seed in progress. Additional days can be added in the same morning, afternoon, evening structure.'
 );
 
-insert into days (id, trip_id, date, city, title, accommodation, status, notes) values
-  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '2026-06-08', 'Paris', 'Arrival day', 'San Regis (Booked)', 'booked', ''),
-  ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', '2026-06-11', 'Nice', 'Transfer south', 'Royal Riviera', 'booked', '');
+insert into days (id, trip_id, date, city, title, day_type, accommodation, status, notes) values
+  ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '2026-06-08', 'Paris', 'Arrival day', 'standard', 'San Regis (Booked)', 'booked', ''),
+  ('10000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', '2026-06-11', 'Nice', 'Transfer south', 'travel', 'Royal Riviera', 'booked', '');
 
 insert into events (id, day_id, city, title, section, type, start_time, end_time, location, status, estimated_cost, notes) values
   ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Paris', 'Arrive 7:25am / Check-in San Regis', 'Morning', 'Travel', '07:25', null, '', 'booked', 0, ''),

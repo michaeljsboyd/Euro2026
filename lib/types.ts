@@ -1,5 +1,6 @@
 export type BookingStatus = "booked" | "tentative" | "tbc";
 export type DaySection = "Morning" | "Afternoon" | "Evening";
+export type DayType = "travel" | "standard";
 export type PlaceType = "Restaurant" | "Beach Club" | "Bar" | "Activity";
 export type BookingType = "hotel" | "restaurant" | "flight" | "activity";
 export type EventType = "Travel" | "Stay" | "Meal" | "Activity" | "Nightlife" | "Beach";
@@ -28,6 +29,7 @@ export interface Day {
   date: string;
   city: string;
   title: string;
+  dayType: DayType;
   accommodation: string;
   status: BookingStatus;
   notes: string;
