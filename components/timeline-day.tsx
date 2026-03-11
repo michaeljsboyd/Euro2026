@@ -1,4 +1,20 @@
-import { Clock3, Plus } from "lucide-react";
+import { useState } from "react";
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Clock3, GripVertical, Plus } from "lucide-react";
 
 import { formatDate, formatTime } from "@/lib/format";
 import { Day, DaySection, Event } from "@/lib/types";
@@ -9,6 +25,8 @@ interface TimelineDayProps {
   events: Event[];
   onEventClick: (event: Event) => void;
   onAddEvent: (day: Day, section: DaySection) => void;
+  onQuickAddEvent: (day: Day, section: DaySection, title: string, startTime: string) => void;
+  onReorderEvents: (dayId: string, section: DaySection, orderedEventIds: string[]) => void;
 }
 
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
@@ -25,25 +43,80 @@ const emptySectionCopy: Record<DaySection, string> = {
   Evening: "Evening open — dinner reservation?"
 };
 
-function sortEventsByTime(events: Event[]) {
-  return [...events].sort((left, right) => {
-    if (!left.startTime && !right.startTime) {
-      return left.title.localeCompare(right.title);
-    }
-
-    if (!left.startTime) {
-      return 1;
-    }
-
-    if (!right.startTime) {
-      return -1;
-    }
-
-    return left.startTime.localeCompare(right.startTime);
-  });
+interface SortableEventCardProps {
+  event: Event;
+  onEventClick: (event: Event) => void;
 }
 
-export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineDayProps) {
+function SortableEventCard({ event, onEventClick }: SortableEventCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition
+  } = useSortable({ id: event.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      onClick={() => onEventClick(event)}
+      onKeyDown={(eventKey) => {
+        if (eventKey.key === "Enter" || eventKey.key === " ") {
+          eventKey.preventDefault();
+          onEventClick(event);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      className="block w-full rounded-[24px] border border-[#efe6da] bg-[#fffdfa] p-5 text-left transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(31,36,48,0.06)]"
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition
+      }}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <button
+            type="button"
+            onClick={(eventClick) => eventClick.stopPropagation()}
+            className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#eadfce] bg-white text-ink/45 transition hover:text-ink"
+            aria-label={`Drag ${event.title}`}
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="h-4 w-4" />
+          </button>
+          <h4 className="max-w-[14rem] text-lg font-semibold leading-7 text-ink">
+            {event.title}
+          </h4>
+        </div>
+        <StatusBadge status={event.status} />
+      </div>
+      <p className="mt-4 inline-flex items-center gap-2 text-sm text-ink/58">
+        <Clock3 className="h-4 w-4 text-olive" />
+        {formatTime(event.startTime)}
+        {event.endTime ? ` - ${formatTime(event.endTime)}` : ""}
+      </p>
+      {event.notes ? (
+        <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
+      ) : null}
+    </div>
+  );
+}
+
+export function TimelineDay({
+  day,
+  events,
+  onEventClick,
+  onAddEvent,
+  onQuickAddEvent,
+  onReorderEvents
+}: TimelineDayProps) {
+  const [quickAddSection, setQuickAddSection] = useState<DaySection | null>(null);
+  const [quickAddTitle, setQuickAddTitle] = useState("");
+  const [quickAddTime, setQuickAddTime] = useState("");
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const groupedEvents = sections.reduce<Record<DaySection, Event[]>>(
     (accumulator, section) => ({
       ...accumulator,
@@ -56,10 +129,39 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
     }
   );
 
-  for (const event of sortEventsByTime(events)) {
+  for (const event of events) {
     groupedEvents[event.section].push(event);
   }
   const imageUrl = cityImages[day.city];
+
+  const resetQuickAdd = () => {
+    setQuickAddSection(null);
+    setQuickAddTitle("");
+    setQuickAddTime("");
+  };
+
+  const handleDragEnd = (section: DaySection, event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const sectionEvents = groupedEvents[section];
+    const oldIndex = sectionEvents.findIndex((item) => item.id === active.id);
+    const newIndex = sectionEvents.findIndex((item) => item.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    const reordered = arrayMove(sectionEvents, oldIndex, newIndex);
+    onReorderEvents(
+      day.id,
+      section,
+      reordered.map((item) => item.id)
+    );
+  };
 
   return (
     <div className="overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
@@ -98,43 +200,98 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive/80">{section}</p>
-                  <button
-                    type="button"
-                    onClick={() => onAddEvent(day, section)}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink/65 transition-all duration-300 hover:border-white hover:bg-white hover:text-ink"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Add Event
-                  </button>
+                  {quickAddSection === section ? (
+                    <button
+                      type="button"
+                      onClick={resetQuickAdd}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink/65 transition-all duration-300 hover:border-white hover:bg-white hover:text-ink"
+                    >
+                      Cancel
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuickAddSection(section);
+                        setQuickAddTitle("");
+                        setQuickAddTime("");
+                      }}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-ink/65 transition-all duration-300 hover:border-white hover:bg-white hover:text-ink"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Add Event
+                    </button>
+                  )}
                 </div>
                 <div className="h-px bg-gradient-to-r from-[#dccfb8] to-transparent" />
               </div>
 
               <div className="space-y-4">
-                {groupedEvents[section].length ? (
-                  groupedEvents[section].map((event) => (
-                    <button
-                      key={event.id}
-                      type="button"
-                      onClick={() => onEventClick(event)}
-                      className="block w-full rounded-[24px] border border-[#efe6da] bg-[#fffdfa] p-5 text-left transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(31,36,48,0.06)]"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <h4 className="max-w-[16rem] text-lg font-semibold leading-7 text-ink">
-                          {event.title}
-                        </h4>
-                        <StatusBadge status={event.status} />
+                {quickAddSection === section ? (
+                  <div className="rounded-[24px] border border-[#efe6da] bg-[#fffdfa] p-4">
+                    <div className="grid gap-3">
+                      <input
+                        value={quickAddTitle}
+                        onChange={(event) => setQuickAddTitle(event.target.value)}
+                        placeholder="Event title"
+                        className="w-full rounded-[16px] border border-[#e7dccd] bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-gold"
+                      />
+                      <div className="flex flex-col gap-3 sm:flex-row">
+                        <input
+                          type="time"
+                          value={quickAddTime}
+                          onChange={(event) => setQuickAddTime(event.target.value)}
+                          className="w-full rounded-[16px] border border-[#e7dccd] bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-gold sm:max-w-[170px]"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const title = quickAddTitle.trim();
+                              if (!title) {
+                                return;
+                              }
+
+                              onQuickAddEvent(day, section, title, quickAddTime);
+                              resetQuickAdd();
+                            }}
+                            className="inline-flex items-center justify-center rounded-full border border-[#dccfb8] bg-[#f3ecdf] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink transition-all duration-300 hover:bg-[#ede3d1]"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onAddEvent(day, section)}
+                            className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink/70 transition-all duration-300 hover:text-ink"
+                          >
+                            Advanced
+                          </button>
+                        </div>
                       </div>
-                      <p className="mt-4 inline-flex items-center gap-2 text-sm text-ink/58">
-                        <Clock3 className="h-4 w-4 text-olive" />
-                        {formatTime(event.startTime)}
-                        {event.endTime ? ` - ${formatTime(event.endTime)}` : ""}
-                      </p>
-                      {event.notes ? (
-                        <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
-                      ) : null}
-                    </button>
-                  ))
+                    </div>
+                  </div>
+                ) : null}
+                {groupedEvents[section].length ? (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event) => handleDragEnd(section, event)}
+                  >
+                    <SortableContext
+                      items={groupedEvents[section].map((event) => event.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-4">
+                        {groupedEvents[section].map((event) => (
+                          <SortableEventCard
+                            key={event.id}
+                            event={event}
+                            onEventClick={onEventClick}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 ) : (
                   <p className="text-sm italic text-ink/40">{emptySectionCopy[section]}</p>
                 )}

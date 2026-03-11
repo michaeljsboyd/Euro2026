@@ -105,6 +105,47 @@ export function ItineraryEditor({
     setDraft(emptyDraft(day, section));
   };
 
+  const quickAddEvent = (
+    day: Day,
+    section: DaySection,
+    title: string,
+    startTime: string
+  ) => {
+    setLocalEvents((current) => [
+      ...current,
+      {
+        id: `event-${Date.now()}`,
+        dayId: day.id,
+        city: day.city,
+        title,
+        section,
+        type: "Activity",
+        startTime: startTime || null,
+        endTime: null,
+        location: "",
+        status: "tentative",
+        estimatedCost: 0,
+        notes: ""
+      }
+    ]);
+  };
+
+  const reorderEvents = (dayId: string, section: DaySection, orderedEventIds: string[]) => {
+    setLocalEvents((current) => {
+      const sectionEvents = current.filter(
+        (event) => event.dayId === dayId && event.section === section
+      );
+      const otherEvents = current.filter(
+        (event) => !(event.dayId === dayId && event.section === section)
+      );
+      const orderedSectionEvents = orderedEventIds
+        .map((id) => sectionEvents.find((event) => event.id === id))
+        .filter((event): event is Event => Boolean(event));
+
+      return [...otherEvents, ...orderedSectionEvents];
+    });
+  };
+
   const closeModal = () => {
     setDraft(null);
   };
@@ -229,14 +270,16 @@ export function ItineraryEditor({
                   totalEstimatedSpend={totalEstimatedSpend}
                 />
                 {visibleDays.map((day) => (
-                  <TimelineDay
-                    key={day.id}
-                    day={day}
-                    events={visibleEvents.filter((event) => event.dayId === day.id)}
-                    onEventClick={openExistingEvent}
-                    onAddEvent={openNewEvent}
-                  />
-                ))}
+                <TimelineDay
+                  key={day.id}
+                  day={day}
+                  events={visibleEvents.filter((event) => event.dayId === day.id)}
+                  onEventClick={openExistingEvent}
+                  onAddEvent={openNewEvent}
+                  onQuickAddEvent={quickAddEvent}
+                  onReorderEvents={reorderEvents}
+                />
+              ))}
               </>
             ) : (
               <MapView />
