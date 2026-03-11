@@ -12,7 +12,13 @@ interface ItineraryEditorProps {
   days: Day[];
   events: Event[];
   cityFilter: string | null;
+  eyebrow?: string;
+  title?: string;
   description: string;
+  actionHref?: string;
+  actionLabel?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
 interface EditorDraft {
@@ -54,7 +60,18 @@ function draftFromEvent(event: Event): EditorDraft {
   };
 }
 
-export function ItineraryEditor({ days, events, cityFilter, description }: ItineraryEditorProps) {
+export function ItineraryEditor({
+  days,
+  events,
+  cityFilter,
+  eyebrow = "Itinerary",
+  title = "Daily Flow",
+  description,
+  actionHref,
+  actionLabel,
+  emptyTitle = "No itinerary found",
+  emptyDescription = "There are no days matching this city filter in the seeded trip plan."
+}: ItineraryEditorProps) {
   const [localEvents, setLocalEvents] = useState(events);
   const [draft, setDraft] = useState<EditorDraft | null>(null);
 
@@ -138,16 +155,16 @@ export function ItineraryEditor({ days, events, cityFilter, description }: Itine
     <>
       <div className="space-y-8">
         <PageHeader
-          eyebrow="Itinerary"
-          title="Daily Flow"
+          eyebrow={eyebrow}
+          title={title}
           description={description}
           action={
-            cityFilter ? (
+            cityFilter && actionHref && actionLabel ? (
               <Link
-                href="/itinerary"
+                href={actionHref}
                 className="rounded-full border border-white/70 bg-white/75 px-4 py-2 text-sm font-medium text-ink/72 transition-all duration-300 hover:bg-white hover:text-ink"
               >
-                View full itinerary
+                {actionLabel}
               </Link>
             ) : null
           }
@@ -166,9 +183,9 @@ export function ItineraryEditor({ days, events, cityFilter, description }: Itine
             ))
           ) : (
             <div className="rounded-[26px] border border-white/60 bg-white/80 p-8 text-center shadow-panel">
-              <p className="font-display text-3xl text-ink">No itinerary found</p>
+              <p className="font-display text-3xl text-ink">{emptyTitle}</p>
               <p className="mt-3 text-sm leading-6 text-ink/65">
-                There are no days matching this city filter in the seeded trip plan.
+                {emptyDescription}
               </p>
             </div>
           )}

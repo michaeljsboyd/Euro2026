@@ -27,7 +27,11 @@ export default async function ItineraryPage({ searchParams }: ItineraryPageProps
       days={visibleDays}
       events={visibleEvents}
       cityFilter={cityFilter}
+      eyebrow="Itinerary"
+      title="Daily Flow"
       description={description}
+      actionHref="/itinerary"
+      actionLabel="View full itinerary"
     />
   );
 }

@@ -68,7 +68,7 @@ export default async function DashboardPage() {
             {citySummary.map((summary) => (
               <Link
                 key={`${summary.city}-${summary.start}`}
-                href={`/itinerary?city=${slugifyCity(summary.city)}`}
+                href={`/city/${slugifyCity(summary.city)}`}
                 className="group rounded-[24px] bg-[#f7f2ea] p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:bg-[#fbf7ef] hover:shadow-[0_22px_50px_rgba(31,36,48,0.09)]"
               >
                 <article className="flex items-start justify-between gap-3">
