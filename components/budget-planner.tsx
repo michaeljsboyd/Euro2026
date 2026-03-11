@@ -37,6 +37,14 @@ function parseAmount(value: string) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
+function formatInputValue(value: number | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  return String(value);
+}
+
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[24px] border border-[#e8dece] bg-white/80 p-6 shadow-[0_18px_40px_rgba(112,88,57,0.08)]">
@@ -157,21 +165,21 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
             <table className="min-w-full border-collapse text-sm">
               <thead className="bg-[#f7f2ea]">
                 <tr>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
                     Category
                   </th>
                   {columns.map((column) => (
                     <th
                       key={column}
-                      className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive"
+                      className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive"
                     >
                       {column}
                     </th>
                   ))}
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.22em] text-olive">
                     Remaining
                   </th>
-                  <th className="w-[56px] px-5 py-4" />
+                  <th className="w-[56px] px-4 py-3" />
                 </tr>
               </thead>
               <tbody>
@@ -182,7 +190,7 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
 
                   return (
                     <tr key={row.id} className="border-t border-[#efe4d3]">
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <input
                           value={row.category}
                           onChange={(event) => updateCategory(row.id, event.target.value)}
@@ -190,23 +198,27 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
                         />
                       </td>
                       {columns.map((column) => (
-                        <td key={column} className="px-5 py-4">
+                        <td key={column} className="px-4 py-3">
                           <input
                             type="number"
-                            value={row.values[column] ?? 0}
+                            inputMode="numeric"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                            value={formatInputValue(row.values[column])}
                             onChange={(event) => updateCell(row.id, column, event.target.value)}
-                            className="w-full min-w-[120px] rounded-[18px] border border-[#e7dccd] bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-gold"
+                            className="w-full min-w-[120px] rounded-[16px] border border-[#e7dccd] bg-white px-3 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink/25 focus:border-gold"
                           />
                         </td>
                       ))}
                       <td
-                        className={`px-5 py-4 text-sm font-semibold ${
+                        className={`px-4 py-3 text-sm font-semibold ${
                           rowRemaining >= 0 ? "text-emerald-800" : "text-rose-700"
                         }`}
                       >
                         {formatCurrency(rowRemaining, currency)}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-4 py-3">
                         <button
                           type="button"
                           onClick={() => removeCategory(row.id)}
@@ -222,22 +234,22 @@ export function BudgetPlanner({ currency = "EUR" }: BudgetPlannerProps) {
               </tbody>
               <tfoot>
                 <tr className="border-t border-[#e8dece] bg-[#f7f2ea]">
-                  <td className="px-5 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
+                  <td className="px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
                     Totals
                   </td>
                   {columns.map((column) => (
-                    <td key={column} className="px-5 py-4 text-sm font-semibold text-ink">
+                    <td key={column} className="px-4 py-3 text-sm font-semibold text-ink">
                       {formatCurrency(totals[column] ?? 0, currency)}
                     </td>
                   ))}
                   <td
-                    className={`px-5 py-4 text-sm font-semibold ${
+                    className={`px-4 py-3 text-sm font-semibold ${
                       remaining >= 0 ? "text-emerald-800" : "text-rose-700"
                     }`}
                   >
                     {formatCurrency(remaining, currency)}
                   </td>
-                  <td className="px-5 py-4" />
+                  <td className="px-4 py-3" />
                 </tr>
               </tfoot>
             </table>
