@@ -13,7 +13,7 @@ interface TimelineDayProps {
 
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
 const cityImages: Record<string, string> = {
-  Paris: "/images/paris.jpeg",
+  Paris: "/images/paris.jpg",
   Nice: "/images/nice.jpg",
   Ibiza: "/images/ibiza.jpg",
   Sicily: "/images/sicily.jpg",
@@ -54,17 +54,18 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
   for (const event of sortEventsByTime(events)) {
     groupedEvents[event.section].push(event);
   }
+  const imageUrl = cityImages[day.city];
 
   return (
-    <section className="relative rounded-[28px] border border-white/50 bg-white/70 px-8 py-10 shadow-[0_20px_60px_rgba(31,36,48,0.06)] backdrop-blur-sm">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.06]"
-        style={{
-          backgroundImage: `url(${cityImages[day.city] || "/images/paris.jpeg"})`
-        }}
-      />
+    <div className="relative overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
+      {imageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+        />
+      ) : null}
 
-      <div className="relative z-10">
+      <div className="relative bg-[rgba(255,251,245,0.92)] px-8 py-10 backdrop-blur-[2px]">
         <div className="space-y-4 border-b border-[#ece4d8] pb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
@@ -135,6 +136,6 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }
