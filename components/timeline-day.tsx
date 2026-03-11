@@ -57,19 +57,17 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
   const imageUrl = cityImages[day.city];
 
   return (
-    <div className="relative overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
+    <div className="overflow-hidden rounded-[32px] border border-white/60 shadow-panel">
       {imageUrl ? (
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="h-40 rounded-t-[32px] bg-cover bg-center"
           style={{
-            backgroundImage: `url(${imageUrl})`,
-            opacity: 0.75
+            backgroundImage: `url(${imageUrl})`
           }}
         />
       ) : null}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[rgba(255,251,245,0.5)]" />
 
-      <div className="relative bg-[rgba(255,251,245,0.7)] px-8 py-10 backdrop-blur-[0.5px]">
+      <div className="bg-[rgba(255,251,245,0.95)] px-8 py-10">
         <div className="space-y-4 border-b border-[rgba(140,112,74,0.2)] pb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
