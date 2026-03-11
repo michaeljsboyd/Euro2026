@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { ExternalLink, Phone } from "lucide-react";
 
@@ -44,6 +44,7 @@ export function AccommodationCard({
   isAnimating = false,
   href
 }: AccommodationCardProps) {
+  const router = useRouter();
   const cardContent = (
     <>
       <div className="flex items-start justify-between gap-4">
@@ -102,12 +103,20 @@ export function AccommodationCard({
 
   if (href) {
     return (
-      <Link
-        href={href}
+      <div
+        role="link"
+        tabIndex={0}
+        onClick={() => router.push(href)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            router.push(href);
+          }
+        }}
         className="block rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(31,36,48,0.07)]"
       >
         {cardContent}
-      </Link>
+      </div>
     );
   }
 
