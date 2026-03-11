@@ -5,7 +5,7 @@ import { AccommodationSnapshot } from "@/components/accommodation-snapshot";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
-import { StatusBadge } from "@/components/status-badge";
+import { TodoListCard } from "@/components/todo-list-card";
 import { cityStays } from "@/lib/city-stays";
 import { formatCurrency, formatDateRange, slugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
@@ -56,10 +56,6 @@ export default async function DashboardPage() {
   ).length;
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
   const citySummary = cityStays;
-
-  const nextActions = [...data.events, ...data.bookings]
-    .filter((item) => item.status !== "booked")
-    .slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -131,22 +127,13 @@ export default async function DashboardPage() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Pending Actions" subtitle="High-signal items still to lock in.">
-          <div className="space-y-3">
-            {nextActions.map((item) => (
-              <div key={item.id} className="rounded-[22px] bg-[#f7f2ea] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-ink">{item.title}</p>
-                    <p className="text-sm text-ink/60">{item.city}</p>
-                  </div>
-                  <StatusBadge status={item.status} />
-                </div>
-                <p className="mt-3 text-sm leading-6 text-ink/65">{item.notes}</p>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <TodoListCard
+          initialItems={[
+            { label: "Confirm remaining Rome plans" },
+            { label: "Add final dining references" },
+            { label: "Review internal flight timings", completed: true }
+          ]}
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
