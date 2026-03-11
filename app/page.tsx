@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { CalendarDays, CircleDollarSign, ExternalLink, MapPinned, Phone, Plane } from "lucide-react";
+import { CalendarDays, CircleDollarSign, MapPinned, Plane } from "lucide-react";
 
+import { AccommodationSnapshot } from "@/components/accommodation-snapshot";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
@@ -150,42 +151,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <SectionCard title="Accommodation Snapshot" subtitle="A clean hotel overview across the key stays on the trip.">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-            {accommodations.map((accommodation) => (
-              <article
-                key={accommodation.city}
-                className="rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-olive/80">
-                      {accommodation.city}
-                    </p>
-                    <p className="mt-2 font-semibold text-ink">{accommodation.hotel}</p>
-                    <p className="mt-1 text-sm text-ink/60">
-                      Luxury stay snapshot
-                    </p>
-                  </div>
-                  <StatusBadge status={accommodation.status} />
-                </div>
-                <div className="mt-4 flex flex-col gap-3 text-sm text-ink/68">
-                  <a
-                    href={accommodation.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 underline decoration-olive/35 underline-offset-4"
-                  >
-                    <ExternalLink className="h-4 w-4 text-olive" />
-                    Website
-                  </a>
-                  <a href={`tel:${accommodation.phone}`} className="inline-flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-olive" />
-                    {accommodation.phone}
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
+          <AccommodationSnapshot accommodations={accommodations} />
         </SectionCard>
 
         <SectionCard title="Planner Notes" subtitle="The seeded v1 data is designed to be easy to replace with your real trip details.">

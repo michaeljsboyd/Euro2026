@@ -7,6 +7,7 @@ import { CalendarPlus2, Trash2, X } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { TimelineDay } from "@/components/timeline-day";
 import { Day, DaySection, Event, BookingStatus } from "@/lib/types";
+import { useSharedEvents } from "@/lib/use-shared-events";
 
 interface ItineraryEditorProps {
   days: Day[];
@@ -72,13 +73,8 @@ export function ItineraryEditor({
   emptyTitle = "No itinerary found",
   emptyDescription = "There are no days matching this city filter in the seeded trip plan."
 }: ItineraryEditorProps) {
-  const [localEvents, setLocalEvents] = useState(events);
+  const { events: localEvents, setEvents: setLocalEvents } = useSharedEvents(events);
   const [draft, setDraft] = useState<EditorDraft | null>(null);
-
-  useEffect(() => {
-    setLocalEvents(events);
-    setDraft(null);
-  }, [events]);
 
   const openExistingEvent = (event: Event) => {
     setDraft(draftFromEvent(event));
@@ -150,6 +146,10 @@ export function ItineraryEditor({
     setLocalEvents((current) => current.filter((event) => event.id !== draft.id));
     closeModal();
   };
+
+  useEffect(() => {
+    setDraft(null);
+  }, [cityFilter]);
 
   return (
     <>
