@@ -13,7 +13,7 @@ interface TimelineDayProps {
 
 const sections: DaySection[] = ["Morning", "Afternoon", "Evening"];
 const cityImages: Record<string, string> = {
-  Paris: "/images/paris.jpg",
+  Paris: "/images/paris.jpeg",
   Nice: "/images/nice.jpg",
   Ibiza: "/images/ibiza.jpg",
   Sicily: "/images/sicily.jpg",
@@ -55,21 +55,14 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
     groupedEvents[event.section].push(event);
   }
 
-  const cityImage = cityImages[day.city];
-
   return (
     <section className="relative overflow-hidden rounded-[28px] border border-white/60 bg-white/78 p-6 shadow-panel backdrop-blur md:p-8">
-      {cityImage ? (
-        <div className="absolute inset-0 z-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center blur-[16px] opacity-[0.08] scale-110"
-            style={{
-              backgroundImage: `url(${cityImages[day.city]})`
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f7f3ea] via-[#f7f3ea]/95 to-[#f7f3ea]" />
-        </div>
-      ) : null}
+      <div
+        className="absolute inset-0 bg-cover bg-center blur-[12px] opacity-[0.18] scale-110"
+        style={{
+          backgroundImage: `url(${cityImages[day.city] || "/images/paris.jpeg"})`
+        }}
+      />
 
       <div className="relative z-10">
         <div className="space-y-5 border-b border-[#ece4d8] pb-8">
