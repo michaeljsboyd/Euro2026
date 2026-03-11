@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, CircleDollarSign, MapPinned, Plane } from "lucide-react";
 
 import { AccommodationSnapshot } from "@/components/accommodation-snapshot";
+import { DaysStatCard } from "@/components/days-stat-card";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
@@ -40,8 +41,7 @@ export default async function DashboardPage() {
             icon={<MapPinned className="h-5 w-5" />}
           />
         </Link>
-        <StatCard
-          label="Days"
+        <DaysStatCard
           value={String(data.days.length)}
           detail="Full journey window including travel and reset days."
           icon={<CalendarDays className="h-5 w-5" />}
