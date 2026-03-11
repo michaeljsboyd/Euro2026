@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Trash2, X } from "lucide-react";
 
 import { useTripContext } from "@/context/TripContext";
+import { MapView } from "@/components/map-view";
 import { PageHeader } from "@/components/page-header";
 import { TimelineDay } from "@/components/timeline-day";
 import { TripSummaryBar } from "@/components/trip-summary-bar";
@@ -74,6 +75,7 @@ export function ItineraryEditor({
 }: ItineraryEditorProps) {
   const { days, events: localEvents, setEvents: setLocalEvents } = useTripContext();
   const [draft, setDraft] = useState<EditorDraft | null>(null);
+  const [activeView, setActiveView] = useState<"itinerary" | "map">("itinerary");
 
   const visibleDays = days.filter((day) => {
     if (dateFilter) {
@@ -190,24 +192,55 @@ export function ItineraryEditor({
         />
 
         <div className="space-y-10">
+          <div className="flex justify-start">
+            <div className="inline-flex rounded-full border border-white/70 bg-white/75 p-1 shadow-[0_12px_30px_rgba(31,36,48,0.04)]">
+              <button
+                type="button"
+                onClick={() => setActiveView("itinerary")}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                  activeView === "itinerary"
+                    ? "bg-[#f3ecdf] text-ink shadow-[0_8px_18px_rgba(31,36,48,0.06)]"
+                    : "text-ink/60 hover:text-ink"
+                }`}
+              >
+                Itinerary
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveView("map")}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                  activeView === "map"
+                    ? "bg-[#f3ecdf] text-ink shadow-[0_8px_18px_rgba(31,36,48,0.06)]"
+                    : "text-ink/60 hover:text-ink"
+                }`}
+              >
+                Map
+              </button>
+            </div>
+          </div>
+
           {visibleDays.length ? (
-            <>
-              <TripSummaryBar
-                totalDays={visibleDays.length}
-                totalEvents={visibleEvents.length}
-                bookedPercent={bookedPercent}
-                totalEstimatedSpend={totalEstimatedSpend}
-              />
-              {visibleDays.map((day) => (
-                <TimelineDay
-                  key={day.id}
-                  day={day}
-                  events={visibleEvents.filter((event) => event.dayId === day.id)}
-                  onEventClick={openExistingEvent}
-                  onAddEvent={openNewEvent}
+            activeView === "itinerary" ? (
+              <>
+                <TripSummaryBar
+                  totalDays={visibleDays.length}
+                  totalEvents={visibleEvents.length}
+                  bookedPercent={bookedPercent}
+                  totalEstimatedSpend={totalEstimatedSpend}
                 />
-              ))}
-            </>
+                {visibleDays.map((day) => (
+                  <TimelineDay
+                    key={day.id}
+                    day={day}
+                    events={visibleEvents.filter((event) => event.dayId === day.id)}
+                    onEventClick={openExistingEvent}
+                    onAddEvent={openNewEvent}
+                  />
+                ))}
+              </>
+            ) : (
+              <MapView />
+            )
           ) : (
             <div className="rounded-[26px] border border-white/60 bg-white/80 p-8 text-center shadow-panel">
               <p className="font-display text-3xl text-ink">{emptyTitle}</p>
