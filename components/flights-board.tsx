@@ -21,7 +21,7 @@ interface Flight {
   notes: string;
 }
 
-interface FlightDraft {
+type FlightDraft = {
   id: string | null;
   from: string;
   to: string;
@@ -30,9 +30,9 @@ interface FlightDraft {
   arrivalTime: string;
   airline: string;
   flightNumber: string;
-  status: BookingStatus;
-  notes: string;
-}
+  status: "booked" | "tentative";
+  notes?: string;
+};
 
 const initialFlights: Flight[] = [
   {
@@ -68,7 +68,7 @@ const initialFlights: Flight[] = [
     arrivalTime: "13:05",
     airline: "ITA Airways",
     flightNumber: "AZ 8114",
-    status: "tbc",
+    status: "tentative",
     notes: "Final route still to confirm."
   },
   {
@@ -85,7 +85,7 @@ const initialFlights: Flight[] = [
   }
 ];
 
-const statuses: BookingStatus[] = ["booked", "tentative", "tbc"];
+const statuses: FlightDraft["status"][] = ["booked", "tentative"];
 
 function emptyDraft(): FlightDraft {
   return {
@@ -103,7 +103,10 @@ function emptyDraft(): FlightDraft {
 }
 
 function draftFromFlight(flight: Flight): FlightDraft {
-  return { ...flight };
+  return {
+    ...flight,
+    status: flight.status === "tbc" ? "tentative" : flight.status
+  };
 }
 
 export function FlightsBoard() {
@@ -128,33 +131,25 @@ export function FlightsBoard() {
       return;
     }
 
+    const id = draft.id ?? crypto.randomUUID();
+    const nextFlight: Flight = {
+      ...draft,
+      id,
+      from,
+      to,
+      airline,
+      flightNumber,
+      notes: draft.notes ?? ""
+    };
+
     if (draft.id) {
       setFlights((current) =>
         current.map((flight) =>
-          flight.id === draft.id
-            ? {
-                ...flight,
-                ...draft,
-                from,
-                to,
-                airline,
-                flightNumber
-              }
-            : flight
+          flight.id === draft.id ? nextFlight : flight
         )
       );
     } else {
-      setFlights((current) => [
-        ...current,
-        {
-          id: `flight-${Date.now()}`,
-          ...draft,
-          from,
-          to,
-          airline,
-          flightNumber
-        }
-      ]);
+      setFlights((current) => [...current, nextFlight]);
     }
 
     closeModal();
@@ -291,7 +286,7 @@ export function FlightsBoard() {
                 <select
                   value={draft.status}
                   onChange={(event) =>
-                    setDraft({ ...draft, status: event.target.value as BookingStatus })
+                    setDraft({ ...draft, status: event.target.value as FlightDraft["status"] })
                   }
                   className="w-full rounded-[20px] border border-[#e7dccd] bg-[#fffdfa] px-4 py-3 text-sm text-ink outline-none transition focus:border-gold"
                 >
@@ -383,4 +378,3 @@ export function FlightsBoard() {
     </>
   );
 }
-
