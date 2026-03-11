@@ -17,18 +17,7 @@ export default async function DashboardPage() {
     (item) => item.status === "tbc"
   ).length;
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
-  const citySummary = cityStays.map((stay) => {
-    const matchingDays = data.days.filter(
-      (day) => day.city === stay.city && day.date >= stay.start && day.date < stay.end
-    );
-
-    return {
-      city: stay.city,
-      start: stay.start,
-      end: stay.end,
-      days: matchingDays.length
-    };
-  });
+  const citySummary = cityStays;
 
   const nextBookings = data.bookings.slice(0, 4);
   const nextActions = [...data.events, ...data.bookings]
@@ -92,7 +81,7 @@ export default async function DashboardPage() {
                     </p>
                   </div>
                   <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-ink/70 transition-all duration-300 group-hover:bg-[#fffdfa] group-hover:shadow-[0_8px_18px_rgba(31,36,48,0.06)]">
-                    {summary.days} days
+                    {summary.nights} {summary.nights === 1 ? "night" : "nights"}
                   </span>
                 </article>
               </Link>
