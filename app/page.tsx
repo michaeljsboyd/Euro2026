@@ -6,54 +6,13 @@ import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
 import { StatCard } from "@/components/stat-card";
 import { TodoListCard } from "@/components/todo-list-card";
+import { initialAccommodationStays } from "@/lib/accommodation-stays";
 import { cityStays } from "@/lib/city-stays";
 import { formatCurrency, formatDateRange, slugifyCity } from "@/lib/format";
 import { getPlannerData } from "@/lib/supabase/queries";
 
 export default async function DashboardPage() {
   const data = await getPlannerData();
-  const accommodations = [
-    {
-      id: "stay-paris-san-regis",
-      city: "Paris",
-      hotel: "San Regis",
-      status: "booked" as const,
-      website: "https://www.hotel-sanregis.fr/en/",
-      phone: "+33144951616"
-    },
-    {
-      id: "stay-cap-ferrat-royal-riviera",
-      city: "Cap Ferrat",
-      hotel: "Royal Riviera",
-      status: "booked" as const,
-      website: "https://www.royal-riviera.com",
-      phone: "+33493763100"
-    },
-    {
-      id: "stay-ibiza-destino",
-      city: "Ibiza",
-      hotel: "Destino",
-      status: "tentative" as const,
-      website: "https://destino.fivehotelsandresorts.com/",
-      phone: "+34971317411"
-    },
-    {
-      id: "stay-sicily-grand-hotel-timeo",
-      city: "Sicily",
-      hotel: "Grand Hotel Timeo",
-      status: "tentative" as const,
-      website: "https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/",
-      phone: "+3909426270200"
-    },
-    {
-      id: "stay-rome-hasler",
-      city: "Rome",
-      hotel: "Hasler",
-      status: "booked" as const,
-      website: "https://www.hotelhasslerroma.com/",
-      phone: "+39066993401"
-    }
-  ];
 
   const bookedEvents = data.events.filter((event) => event.status === "booked").length;
   const pendingCount = [...data.events, ...data.bookings, ...data.places].filter(
@@ -142,7 +101,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <AccommodationSnapshotPanel initialAccommodations={accommodations} />
+        <AccommodationSnapshotPanel initialAccommodations={initialAccommodationStays} />
 
         <SectionCard title="Planner Notes" subtitle="The seeded v1 data is designed to be easy to replace with your real trip details.">
           <div className="grid gap-4 md:grid-cols-2">
