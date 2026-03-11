@@ -67,7 +67,7 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
         />
       ) : null}
 
-      <div className="bg-[rgba(255,251,245,0.95)] px-8 py-10">
+      <div className="rounded-b-[32px] bg-[rgba(255,251,245,0.95)] px-8 py-10">
         <div className="space-y-4 border-b border-[rgba(140,112,74,0.2)] pb-7">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-olive">{formatDate(day.date)}</p>
           <div>
@@ -127,12 +127,12 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
                       </p>
                       {event.notes ? (
                         <p className="mt-4 text-sm leading-7 text-ink/68">{event.notes}</p>
-                    ) : null}
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm italic text-ink/40">Nothing scheduled yet.</p>
-              )}
+                      ) : null}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm italic text-ink/40">Nothing scheduled yet.</p>
+                )}
               </div>
             </div>
           ))}
