@@ -142,9 +142,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard title="Accommodation Snapshot" subtitle="A clean hotel overview across the key stays on the trip.">
-          <AccommodationSnapshotPanel initialAccommodations={accommodations} />
-        </SectionCard>
+        <AccommodationSnapshotPanel initialAccommodations={accommodations} />
 
         <SectionCard title="Planner Notes" subtitle="The seeded v1 data is designed to be easy to replace with your real trip details.">
           <div className="grid gap-4 md:grid-cols-2">
