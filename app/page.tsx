@@ -69,12 +69,17 @@ export default async function DashboardPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Cities"
-          value={String(citySummary.length)}
-          detail="Five curated stops with a different rhythm at each stage."
-          icon={<MapPinned className="h-5 w-5" />}
-        />
+        <Link
+          href="/map"
+          className="rounded-[24px] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:opacity-95 hover:shadow-[0_20px_50px_rgba(31,36,48,0.08)]"
+        >
+          <StatCard
+            label="Cities"
+            value={String(citySummary.length)}
+            detail="Five curated stops with a different rhythm at each stage."
+            icon={<MapPinned className="h-5 w-5" />}
+          />
+        </Link>
         <StatCard
           label="Days"
           value={String(data.days.length)}

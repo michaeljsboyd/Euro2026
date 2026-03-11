@@ -8,7 +8,6 @@ import clsx from "clsx";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { href: "/", label: "Dashboard" },
   { href: "/itinerary", label: "Daily Flow" },
   { href: "/overview", label: "Overview" },
   { href: "/flights", label: "Flights" },
@@ -30,12 +29,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
         <header className="sticky top-4 z-30 mb-8 rounded-[32px] border border-white/60 bg-[rgba(255,250,244,0.72)] p-3 shadow-panel backdrop-blur-xl">
           <div className="flex items-center justify-between gap-4 px-2 py-1 md:px-3">
-            <div>
+            <Link href="/" className="transition-opacity duration-300 hover:opacity-78">
               <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-olive">
                 Private Trip Planner
               </p>
               <h1 className="font-display text-3xl text-ink">Europe 2026</h1>
-            </div>
+            </Link>
 
             <button
               type="button"
