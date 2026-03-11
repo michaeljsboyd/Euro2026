@@ -60,14 +60,14 @@ export function TimelineDay({ day, events, onEventClick, onAddEvent }: TimelineD
   return (
     <section className="relative overflow-hidden rounded-[32px] border border-white/60 bg-white/78 p-6 shadow-panel backdrop-blur md:p-8">
       {cityImage ? (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <div
-            className="absolute inset-0 bg-cover bg-center blur-[10px] opacity-15 scale-105"
+            className="absolute inset-0 bg-cover bg-center blur-[10px] opacity-20 scale-105"
             style={{
               backgroundImage: `url(${cityImages[day.city]})`
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f7f3ea]/90 via-[#f7f3ea]/80 to-[#f7f3ea]/95" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f7f3ea]/85 via-[#f7f3ea]/80 to-[#f7f3ea]/90" />
         </div>
       ) : null}
 
