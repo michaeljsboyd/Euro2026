@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, CircleDollarSign, MapPinned, Plane } from "lucide-react";
+import { CalendarDays, CircleDollarSign, ExternalLink, MapPinned, Phone, Plane } from "lucide-react";
 
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
@@ -11,6 +11,43 @@ import { getPlannerData } from "@/lib/supabase/queries";
 
 export default async function DashboardPage() {
   const data = await getPlannerData();
+  const accommodations = [
+    {
+      city: "Paris",
+      hotel: "San Regis",
+      status: "booked" as const,
+      website: "https://www.hotel-sanregis.fr/en/",
+      phone: "+33144951616"
+    },
+    {
+      city: "Cap Ferrat",
+      hotel: "Royal Riviera",
+      status: "booked" as const,
+      website: "https://www.royal-riviera.com",
+      phone: "+33493763100"
+    },
+    {
+      city: "Ibiza",
+      hotel: "Destino",
+      status: "tentative" as const,
+      website: "https://destino.fivehotelsandresorts.com/",
+      phone: "+34971317411"
+    },
+    {
+      city: "Sicily",
+      hotel: "Grand Hotel Timeo",
+      status: "tentative" as const,
+      website: "https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/",
+      phone: "+3909426270200"
+    },
+    {
+      city: "Rome",
+      hotel: "Hasler",
+      status: "booked" as const,
+      website: "https://www.hotelhasslerroma.com/",
+      phone: "+39066993401"
+    }
+  ];
 
   const bookedEvents = data.events.filter((event) => event.status === "booked").length;
   const pendingCount = [...data.events, ...data.bookings, ...data.places].filter(
@@ -19,7 +56,6 @@ export default async function DashboardPage() {
   const estimatedBudget = data.budgetItems.reduce((sum, item) => sum + item.estimatedAmount, 0);
   const citySummary = cityStays;
 
-  const nextBookings = data.bookings.slice(0, 4);
   const nextActions = [...data.events, ...data.bookings]
     .filter((item) => item.status !== "booked")
     .slice(0, 5);
@@ -108,22 +144,40 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard title="Bookings Snapshot" subtitle="Quick access to current confirmations and attached files.">
-          <div className="space-y-3">
-            {nextBookings.map((booking) => (
-              <article key={booking.id} className="rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4">
+        <SectionCard title="Accommodation Snapshot" subtitle="A clean hotel overview across the key stays on the trip.">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+            {accommodations.map((accommodation) => (
+              <article
+                key={accommodation.city}
+                className="rounded-[22px] border border-[#ece3d5] bg-[#fffdfa] p-4"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-semibold text-ink">{booking.title}</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-olive/80">
+                      {accommodation.city}
+                    </p>
+                    <p className="mt-2 font-semibold text-ink">{accommodation.hotel}</p>
                     <p className="mt-1 text-sm text-ink/60">
-                      {booking.city} • {booking.type}
+                      Luxury stay snapshot
                     </p>
                   </div>
-                  <StatusBadge status={booking.status} />
+                  <StatusBadge status={accommodation.status} />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-ink/65">
-                  {booking.notes || booking.confirmationNumber}
-                </p>
+                <div className="mt-4 flex flex-col gap-3 text-sm text-ink/68">
+                  <a
+                    href={accommodation.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 underline decoration-olive/35 underline-offset-4"
+                  >
+                    <ExternalLink className="h-4 w-4 text-olive" />
+                    Website
+                  </a>
+                  <a href={`tel:${accommodation.phone}`} className="inline-flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-olive" />
+                    {accommodation.phone}
+                  </a>
+                </div>
               </article>
             ))}
           </div>
