@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { MouseEvent } from "react";
 import { Check, CircleHelp, Clock3, X } from "lucide-react";
 
 import { BookingStatus } from "@/lib/types";
@@ -24,13 +25,23 @@ const icons: Record<BookingStatus, typeof Check> = {
   cancelled: X
 };
 
-export function StatusBadge({ status }: { status: BookingStatus }) {
+interface StatusBadgeProps {
+  status: BookingStatus;
+  onClick?: () => void;
+}
+
+export function StatusBadge({ status, onClick }: StatusBadgeProps) {
   const Icon = icons[status];
 
   return (
     <span
+      onClick={(event: MouseEvent<HTMLSpanElement>) => {
+        event.stopPropagation();
+        onClick?.();
+      }}
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ring-1 ring-inset transition-transform duration-300 hover:scale-[1.03]",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ring-1 ring-inset transition-all duration-200 ease-out",
+        onClick ? "cursor-pointer hover:scale-105 hover:shadow-[0_10px_20px_rgba(31,36,48,0.08)]" : "",
         styles[status]
       )}
     >

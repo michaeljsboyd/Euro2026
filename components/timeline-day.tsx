@@ -24,6 +24,7 @@ interface TimelineDayProps {
   day: Day;
   events: Event[];
   onEventClick: (event: Event) => void;
+  onToggleEventStatus: (eventId: string) => void;
   onAddEvent: (day: Day, section: DaySection) => void;
   onQuickAddEvent: (day: Day, section: DaySection, title: string, startTime: string) => void;
   onReorderEvents: (dayId: string, section: DaySection, orderedEventIds: string[]) => void;
@@ -46,9 +47,14 @@ const emptySectionCopy: Record<DaySection, string> = {
 interface SortableEventCardProps {
   event: Event;
   onEventClick: (event: Event) => void;
+  onToggleEventStatus: (eventId: string) => void;
 }
 
-function SortableEventCard({ event, onEventClick }: SortableEventCardProps) {
+function SortableEventCard({
+  event,
+  onEventClick,
+  onToggleEventStatus
+}: SortableEventCardProps) {
   const {
     attributes,
     listeners,
@@ -91,7 +97,7 @@ function SortableEventCard({ event, onEventClick }: SortableEventCardProps) {
             {event.title}
           </h4>
         </div>
-        <StatusBadge status={event.status} />
+        <StatusBadge status={event.status} onClick={() => onToggleEventStatus(event.id)} />
       </div>
       <p className="mt-4 inline-flex items-center gap-2 text-sm text-ink/58">
         <Clock3 className="h-4 w-4 text-olive" />
@@ -109,6 +115,7 @@ export function TimelineDay({
   day,
   events,
   onEventClick,
+  onToggleEventStatus,
   onAddEvent,
   onQuickAddEvent,
   onReorderEvents
@@ -287,6 +294,7 @@ export function TimelineDay({
                             key={event.id}
                             event={event}
                             onEventClick={onEventClick}
+                            onToggleEventStatus={onToggleEventStatus}
                           />
                         ))}
                       </div>

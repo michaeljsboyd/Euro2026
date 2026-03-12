@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { useTripContext } from "@/context/TripContext";
 import { MapView } from "@/components/map-view";
@@ -35,6 +35,7 @@ interface EditorDraft {
 }
 
 const statuses: BookingStatus[] = ["booked", "tentative", "tbc"];
+const interactiveStatuses: BookingStatus[] = ["booked", "tentative", "tbc"];
 
 function emptyDraft(day: Day, section: DaySection): EditorDraft {
   return {
@@ -144,6 +145,25 @@ export function ItineraryEditor({
 
       return [...otherEvents, ...orderedSectionEvents];
     });
+  };
+
+  const toggleEventStatus = (eventId: string) => {
+    setLocalEvents((current) =>
+      current.map((event) => {
+        if (event.id !== eventId) {
+          return event;
+        }
+
+        const currentIndex = interactiveStatuses.indexOf(event.status);
+        const nextStatus =
+          interactiveStatuses[(currentIndex + 1) % interactiveStatuses.length] ?? "booked";
+
+        return {
+          ...event,
+          status: nextStatus
+        };
+      })
+    );
   };
 
   const closeModal = () => {
@@ -275,6 +295,7 @@ export function ItineraryEditor({
                   day={day}
                   events={visibleEvents.filter((event) => event.dayId === day.id)}
                   onEventClick={openExistingEvent}
+                  onToggleEventStatus={toggleEventStatus}
                   onAddEvent={openNewEvent}
                   onQuickAddEvent={quickAddEvent}
                   onReorderEvents={reorderEvents}
